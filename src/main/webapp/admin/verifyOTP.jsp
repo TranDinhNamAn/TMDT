@@ -40,21 +40,19 @@
             <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
                 <div class="bg-light rounded p-4 p-sm-5 my-4 mx-3">
                     <div class="reset-title">
-                        <h3>Nhập Email</h3>
+                        <h3>Nhập Mã Xác Nhận</h3>
                     </div>
-                    <form action="<%= request.getContextPath() %>/ForgotPasswordController" method="post">
+                    <form action="<%= request.getContextPath() %>/VerifyOTPController" method="post">
                         <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="floatingEmail" placeholder="Email" name="email" required>
-                            <label for="floatingEmail">Email</label>
+                            <input type="text" class="form-control" id="floatingCode" placeholder="Mã Xác Nhận" name="otp" required>
+                            <label for="floatingCode">Mã Xác Nhận</label>
                         </div>
                         <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Xác Nhận</button>
                     </form>
-
                     <%-- Hiển thị thông báo lỗi nếu có --%>
                     <% if (request.getAttribute("error") != null) { %>
                     <p class="text-danger text-center"><%= request.getAttribute("error") %></p>
                     <% } %>
-
                 </div>
             </div>
         </div>

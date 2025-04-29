@@ -1,3 +1,4 @@
+<%@ page import="Model.User" %>
 <!DOCTYPE html>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
@@ -22,6 +23,43 @@
   <link rel="stylesheet" href="assets/css/slicknav.min.css" type="text/css">
   <link rel="stylesheet" href="assets/css/style.css" type="text/css">
   <link rel="stylesheet" href="assets/fontawesome/css/font-awesome.css">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <style>
+    .header__right__widget a,
+    .header__menu a {
+      text-decoration:none !important;
+    }
+
+    .header__right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .dropdown {
+      margin-left: 20px;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .user-menu img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .dropdown-menu {
+      text-align: left;
+      min-width: 160px;
+    }
+  </style>
 </head>
 
 <body>
@@ -77,27 +115,49 @@
 
       </div>
       <div class="col-lg-3">
+
         <div class="header__right">
-          <div class="header__right__auth">
-            <c:if test="${sessionScope.acc != null}">
-              <a href="#">Hello ${sessionScope.acc.username}</a>
-              <a href="<%=request.getContextPath()%>/logout">Logout</a>
-            </c:if>
-            <c:if test="${sessionScope.acc == null}">
-              <a href="<%=request.getContextPath()%>/signin">Đăng nhập</a>
-              <a href="<%=request.getContextPath()%>/signup">Đăng kí</a>
-            </c:if>
-          </div>
-          <ul class="header__right__widget">
-            <li><span class="icon_search search-switch"></span></li>
+          <ul class="header__right__widget" style="margin-right: 20px; margin-bottom: 0px;">
+            <!-- Wishlist -->
             <li><a href="wish_lists.jsp"><span class="icon_heart_alt"></span>
               <div class="tip">2</div>
             </a></li>
+            <!-- Giỏ hàng -->
             <li><a href="shop-cart.jsp"><span class="icon_bag_alt"></span>
               <div class="tip">2</div>
             </a></li>
           </ul>
+
+
+          <%
+            User user = (User) session.getAttribute("user");
+            String avatar = user != null ? user.getProfilePicture() : "https://th.bing.com/th/id/OIP.bvgvfalKJGM4rU-nDAJ3aQHaHa?rs=1&pid=ImgDetMain";
+            String username = user != null ? user.getUserName() : "Khách";
+          %>
+
+          <% if (user != null) { %>
+          <div class="dropdown user-menu">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+              <img class="rounded-circle me-lg-2" src="<%= avatar %>" alt="Avatar" style="width: 40px; height: 40px;">
+              <span class="d-none d-lg-inline-flex">
+              <%= username.length() > 8 ? username.substring(0, 8) + "..." : username %>
+              </span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="<%=request.getContextPath()%>/profile.jsp">Thông tin cá nhân</a></li>
+              <li><a class="dropdown-item" href="<%=request.getContextPath()%>/LogoutController">Đăng xuất</a></li>
+            </ul>
+          </div>
+          <% } else { %>
+          <!-- Khi chưa đăng nhập, hiển thị nút Đăng nhập và Đăng ký -->
+          <div class="header__right__auth">
+            <a href="<%=request.getContextPath()%>/admin/login.jsp">Đăng nhập</a>
+            <a href="<%=request.getContextPath()%>/admin/register.jsp">Đăng ký</a>
+          </div>
+          <% } %>
         </div>
+
+
       </div>
     </div>
     <div class="canvas__open">

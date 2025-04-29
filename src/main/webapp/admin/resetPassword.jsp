@@ -5,10 +5,10 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Lọc Xanh - Quên mật khẩu</title>
+    <title>Lọc Xanh - Đặt lại mật khẩu</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Trang quên mật khẩu Lọc Xanh" name="keywords">
-    <meta content="Quên mật khẩu hệ thống Lọc Xanh" name="description">
+    <meta content="Trang đặt lại mật khẩu Lọc Xanh" name="keywords">
+    <meta content="Đặt lại mật khẩu hệ thống Lọc Xanh" name="description">
 
     <!-- Favicon -->
     <link href="${pageContext.request.contextPath}/assets/admin/img/favicon.icon" rel="icon">
@@ -34,20 +34,24 @@
 
 <body>
 <div class="container-xxl position-relative bg-white d-flex p-0">
-    <!-- Quên mật khẩu Start -->
+    <!-- Đặt lại mật khẩu Start -->
     <div class="container-fluid">
         <div class="row h-100 align-items-center justify-content-center" style="min-height: 100vh;">
             <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
                 <div class="bg-light rounded p-4 p-sm-5 my-4 mx-3">
                     <div class="reset-title">
-                        <h3>Nhập Email</h3>
+                        <h3>Đặt Lại Mật Khẩu</h3>
                     </div>
-                    <form action="<%= request.getContextPath() %>/ForgotPasswordController" method="post">
+                    <form action="<%= request.getContextPath() %>/ResetPasswordController" method="post">
                         <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="floatingEmail" placeholder="Email" name="email" required>
-                            <label for="floatingEmail">Email</label>
+                            <input type="password" class="form-control" id="floatingNewPassword" placeholder="Mật khẩu mới" name="newPassword" required>
+                            <label for="floatingNewPassword">Mật khẩu mới</label>
                         </div>
-                        <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Xác Nhận</button>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="floatingConfirmNewPassword" placeholder="Xác nhận mật khẩu mới" name="confirmPassword" required>
+                            <label for="floatingConfirmNewPassword">Xác nhận mật khẩu mới</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Đặt Lại Mật Khẩu</button>
                     </form>
 
                     <%-- Hiển thị thông báo lỗi nếu có --%>
@@ -55,11 +59,12 @@
                     <p class="text-danger text-center"><%= request.getAttribute("error") %></p>
                     <% } %>
 
+<%--                    <p class="text-center mt-4">Nhớ mật khẩu? <a href="login.jsp">Đăng Nhập</a></p>--%>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Quên mật khẩu End -->
+    <!-- Đặt lại mật khẩu End -->
 </div>
 
 <!-- JavaScript Libraries -->
