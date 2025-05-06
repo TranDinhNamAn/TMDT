@@ -2,9 +2,9 @@ package Database;
 import org.jdbi.v3.core.Jdbi;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:mysql://localhost:3306/TMDT";
+    private static final String URL = "jdbc:mysql://localhost:3306/tmdt3";
     private static final String USER = "root";
-    private static final String PASSWORD = "Nguyenthily126.";
+    private static final String PASSWORD = "123456";
 
     private static Jdbi jdbiInstance;
 

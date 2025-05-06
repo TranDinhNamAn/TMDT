@@ -77,7 +77,7 @@
     <li><a href="<%= request.getContextPath() %>/wish_lists.jsp"><span class="icon_heart_alt"></span>
       <div class="tip">2</div>
     </a></li>
-    <li><a href="<%= request.getContextPath() %>/shop-cart.jsp"><span class="icon_bag_alt"></span>
+    <li><a href="<%= request.getContextPath() %>/shopping-cart"><span class="icon_bag_alt"></span>
       <div class="tip">0</div>
     </a></li>
   </ul>
