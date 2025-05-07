@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 @WebServlet("/update-cart-item")
 public class UpdateCartItemServlet extends HttpServlet {
@@ -29,11 +30,20 @@ public class UpdateCartItemServlet extends HttpServlet {
 
             if (updated) {
                 Cart updatedCart = cartDB.getCartItemByUserAndProduct(userID, productID);
+
+                List<Cart> allItems = cartDB.getCartByUserID(userID);
+                long totalCartPrice = 0;
+                for (Cart item : allItems) {
+                    totalCartPrice += (long)(item.getPrice() * item.getQuantity());
+                }
+                System.out.println("total:" + totalCartPrice);
                 JsonObject json = new JsonObject();
+                long total = Math.round(updatedCart.getPrice() * updatedCart.getQuantity());
+                json.addProperty("total", total);
                 json.addProperty("productID", updatedCart.getProductID());
                 json.addProperty("quantity", updatedCart.getQuantity());
                 json.addProperty("price", updatedCart.getPrice());
-                json.addProperty("total", updatedCart.getPrice() * updatedCart.getQuantity());
+                json.addProperty("totalCartPrice", totalCartPrice);
 
                 out.print(new Gson().toJson(json));
             } else {

@@ -1,5 +1,7 @@
 package Model;
 
+import java.util.List;
+
 public class Cart {
     private int productID;
     private String nameProduct;
@@ -64,5 +66,4 @@ public class Cart {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
-
 }
