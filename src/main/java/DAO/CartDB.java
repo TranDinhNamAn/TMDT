@@ -4,8 +4,6 @@ import Database.DatabaseConnection;
 import Model.Cart;
 import org.jdbi.v3.core.Jdbi;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;

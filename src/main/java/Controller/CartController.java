@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet(name = "ShoppingCart", value = "/shopping-cart")
@@ -31,11 +30,14 @@ public class CartController extends HttpServlet {
 //        }
         int userID = 4;
         List<Cart> cartItems = null;
-
+        double totalPrice = 0;
         CartDB cartDB = new CartDB();
         cartItems = cartDB.getCartByUserID(userID);
-        System.out.println(cartItems.size());
+        for (Cart item : cartItems) {
+            totalPrice += item.getPrice() * item.getQuantity();
+        }
 
+        request.setAttribute("totalPrice", totalPrice);
         request.setAttribute("cartItems", cartItems);
         request.getRequestDispatcher("shop-cart.jsp").forward(request, response);
     }
