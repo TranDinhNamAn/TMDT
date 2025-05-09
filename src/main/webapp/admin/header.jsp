@@ -83,11 +83,11 @@
               <i class="fa fa-cube me-2"></i>Sản phẩm
             </a>
             <div class="dropdown-menu bg-transparent border-0">
-              <a href="${pageContext.request.contextPath}/admin/listProducts.jsp"
+              <a href="${pageContext.request.contextPath}/admin/GetProductAdminController"
                  class="dropdown-item ${currentPage.contains('listProducts.jsp') ? 'active' : ''}">
                 Danh sách sản phẩm
               </a>
-              <a href="${pageContext.request.contextPath}/admin/addProducts.jsp"
+              <a href="${pageContext.request.contextPath}/admin/AddProductController"
                  class="dropdown-item ${currentPage.contains('addProducts.jsp') ? 'active' : ''}">
                 Thêm sản phẩm
               </a>

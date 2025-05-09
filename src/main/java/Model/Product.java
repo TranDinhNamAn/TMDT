@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class Product {
     private int ProductID;
-    private Categories CategoriesID;
+    private String Categories;
     private String NameProduct;
     private String Description;
     private String Image;
@@ -12,10 +12,12 @@ public class Product {
     private int Stock;
     private Date CreateDate;
     private Date LastUpdateDate;
-
-    public Product(int productID, Categories categoriesID, String nameProduct, String description, String image, int price, int stock, Date createDate, Date lastUpdateDate) {
+    public Product() {
+        // Constructor mặc định để JDBI sử dụng
+    }
+    public Product(int productID, String categories, String nameProduct, String description, String image, int price, int stock, Date createDate, Date lastUpdateDate) {
         ProductID = productID;
-        CategoriesID = categoriesID;
+        Categories = categories;
         NameProduct = nameProduct;
         Description = description;
         Image = image;
@@ -24,13 +26,35 @@ public class Product {
         CreateDate = createDate;
         LastUpdateDate = lastUpdateDate;
     }
-
-    public Categories getCategoriesID() {
-        return CategoriesID;
+    //thêm sp
+    public Product(String nameProduct, String description, int price, int stock, String categories) {
+        NameProduct = nameProduct;
+        Categories = categories;
+        Description = description;
+        CreateDate = new Date();
+        LastUpdateDate = new Date();
+        Price = price;
+        Stock = stock;
     }
 
-    public void setCategoriesID(Categories categoriesID) {
-        CategoriesID = categoriesID;
+    //sửa sp
+    public Product(int productID, String nameProduct, String description, int price, int stock, String categories) {
+        ProductID = productID;
+        NameProduct = nameProduct;
+        Categories = categories;
+        Description = description;
+        CreateDate = new Date();
+        LastUpdateDate = new Date();
+        Price = price;
+        Stock = stock;
+    }
+
+    public String getCategories() {
+        return Categories;
+    }
+
+    public void setCategories(String  categories) {
+        Categories = categories;
     }
 
     public int getProductID() {
