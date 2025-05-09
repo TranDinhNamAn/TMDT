@@ -1,4 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="Model.Cart" %>
 <jsp:include page="header.jsp" />
 <!-- Breadcrumb Begin -->
 <div class="breadcrumb-option">
@@ -32,70 +34,35 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td class="cart__product__item">
-                <img src="../img/shop-cart/karofi.jpg" alt="">
-                <div class="cart__product__item__title">
-                  <h6>Karofi KSI80</h6>
-                </div>
-              </td>
-              <td class="cart__price">4.800.000 VND</td>
-              <td class="cart__quantity">
-                <div class="pro-qty">
-                  <input type="text" value="1">
-                </div>
-              </td>
-              <td class="cart__total">4.800.000 VND</td>
-              <td class="cart__close"><span class="icon_close"></span></td>
-            </tr>
-            <tr>
-              <td class="cart__product__item">
-                <img src="../img/shop-cart/sunhouse.jpg" alt="">
-                <div class="cart__product__item__title">
-                  <h6>Sunhouse SHR76210CK</h6>
-                </div>
-              </td>
-              <td class="cart__price">5.200.000 VND</td>
-              <td class="cart__quantity">
-                <div class="pro-qty">
-                  <input type="text" value="1">
-                </div>
-              </td>
-              <td class="cart__total">5.200.000 VND</td>
-              <td class="cart__close"><span class="icon_close"></span></td>
-            </tr>
-            <tr>
-              <td class="cart__product__item">
-                <img src="../img/shop-cart/ultima.jpg" alt="">
-                <div class="cart__product__item__title">
-                  <h6>Pureit Ultima</h6>
-                </div>
-              </td>
-              <td class="cart__price">6.300.000 VND</td>
-              <td class="cart__quantity">
-                <div class="pro-qty">
-                  <input type="text" value="1">
-                </div>
-              </td>
-              <td class="cart__total">6.300.000 VND</td>
-              <td class="cart__close"><span class="icon_close"></span></td>
-            </tr>
-            <tr>
-              <td class="cart__product__item">
-                <img src="../img/shop-cart/kangaroo.jpg" alt="">
-                <div class="cart__product__item__title">
-                  <h6>Kangaroo KG50</h6>
-                </div>
-              </td>
-              <td class="cart__price">4.200.000 VNĐ</td>
-              <td class="cart__quantity">
-                <div class="pro-qty">
-                  <input type="text" value="1">
-                </div>
-              </td>
-              <td class="cart__total">4.200.000 VNĐ</td>
-              <td class="cart__close"><span class="icon_close"></span></td>
-            </tr>
+              <%
+                  List<Cart> cartItems = (List<Cart>) request.getAttribute("cartItems");
+                  if (cartItems != null) {
+                      for (Cart cartItem : cartItems) {
+              %>
+              <tr>
+                   <td class="cart__product__item">
+                    <img src="Image/<%= cartItem.getImage() %>" alt="" style="width: 70px; height: 70px; object-fit: cover;">
+                     <div class="cart__product__item__title">
+                       <h6><%= cartItem.getNameProduct() %></h6>
+                     </div>
+                   </td>
+                   <td class="cart__price"><%= String.format("%,d", (long) cartItem.getPrice()) %> VNĐ</td>
+                  <td class="cart__quantity">
+                         <input type="number" value="<%= cartItem.getQuantity() %>" min="1"
+                                onchange="updateQuantity(<%= cartItem.getProductID() %>, this.value, this)">
+                      </div>
+                  </td>
+                   <td class="cart__total"><%= String.format("%,d", (long)(cartItem.getPrice() * cartItem.getQuantity())) %> VNĐ</td>
+                   <td class="cart__close">
+                     <a href="delete-cart-item?productID=<%= cartItem.getProductID() %>">
+                       <span class="icon_close"></span>
+                     </a>
+                   </td>
+                 </tr>
+              <%
+                      }
+                  }
+              %>
             </tbody>
           </table>
         </div>
@@ -117,16 +84,69 @@
       <div class="col-lg-6">
       </div>
       <div class="col-lg-4 offset-lg-2">
-        <div class="cart__total__procced">
-          <h6>Tổng tiền</h6>
-          <ul>
-            <li>Tổng cộng <span>20.500.000 VNĐ</span></li>
-          </ul>
-          <a href="checkout.html" class="primary-btn">Tiến hành thanh toán</a>
-        </div>
+          <div class="cart__total__procced">
+              <h6>Tổng tiền</h6>
+              <ul>
+                  <li>Tổng cộng
+                      <span>
+                         <%
+                             Double totalPrice = (Double) request.getAttribute("totalPrice");
+                             if (totalPrice != null) {
+                         %>
+                             <%= String.format("%,d VNĐ", totalPrice.longValue()) %>
+                         <%
+                             } else {
+                         %>
+                             0 VNĐ
+                         <%
+                             }
+                         %>
+                      </span>
+                  </li>
+              </ul>
+              <a href="checkout.jsp" class="primary-btn">Tiến hành thanh toán</a>
+          </div>
       </div>
-    </div>
   </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+  function updateQuantity(productID, quantity, inputElement) {
+      console.log("Updating productID:", productID, "with quantity:", quantity);
+
+      $.ajax({
+          url: 'update-cart-item',
+          type: 'POST',
+          data: {
+              productID: productID,
+              quantity: quantity
+          },
+          success: function(response) {
+              console.log("Response từ server:", response);
+
+              if (response.error) {
+                  alert('Lỗi khi cập nhật giỏ hàng!');
+                  return;
+              }
+
+              // Cập nhật tổng tiền của sản phẩm được thay đổi
+              const formattedProductTotal = new Intl.NumberFormat('vi-VN').format(response.total) + ' VNĐ';
+              $(inputElement).closest('tr').find('.cart__total').text(formattedProductTotal);
+
+              // Cập nhật lại số lượng hiển thị nếu server có điều chỉnh
+              $(inputElement).val(response.quantity);
+
+              // ✅ Cập nhật lại tổng tiền giỏ hàng từ server
+              if (response.totalCartPrice !== undefined) {
+                  const formattedCartTotal = new Intl.NumberFormat('vi-VN').format(response.totalCartPrice) + ' VNĐ';
+                  $('.cart__total__procced span').text(formattedCartTotal);
+              }
+          },
+          error: function(xhr, status, error) {
+              console.error('Lỗi khi cập nhật:', error);
+              alert('Đã có lỗi xảy ra khi cập nhật giỏ hàng!');
+          }
+      });
+  }
+</script>
 </section>
-<!-- Shop Cart Section End -->
 <jsp:include page="footer.jsp" />
