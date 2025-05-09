@@ -1,11 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="Model.Categories" %>
 <jsp:include page="header.jsp" />
 <!-- Form add product -->
 <div class="container-fluid pt-4 px-4">
   <div class="bg-light rounded h-100 p-4">
     <h6 class="mb-4">Thêm Sản Phẩm</h6>
     <form action="AddProductController" method="POST" enctype="multipart/form-data">
-      <!-- ID and Category Type in the same row -->
       <!-- Product Name -->
       <div class="mb-3">
         <label for="productName" class="form-label">Tên Sản Phẩm</label>
@@ -20,7 +21,18 @@
         </div>
         <div class="col-md-4">
           <label for="productCategoryType" class="form-label">Loại Sản Phẩm</label>
-          <input type="text" class="form-control" id="productCategoryType" name="productCategoryType" required>
+          <select class="form-control" id="productCategoryType" name="productCategoryType" required>
+            <%
+              List<Categories> categoryList = (List<Categories>) request.getAttribute("categories");
+              if (categoryList != null) {
+                for (Categories c : categoryList) {
+            %>
+            <option value="<%= c.getCategoriesID() %>"><%= c.getName() %></option>
+            <%
+                }
+              }
+            %>
+          </select>
         </div>
         <div class="col-md-4">
           <label for="productStock" class="form-label">Số lượng</label>

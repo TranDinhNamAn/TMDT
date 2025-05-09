@@ -1,6 +1,7 @@
 package Controller;
 
 import DAO.ProductDAO;
+import Model.Categories;
 import Model.Product;
 import Utils.SaveImage;
 import jakarta.servlet.ServletException;
@@ -12,55 +13,87 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
 import java.io.IOException;
+import java.util.List;
 
 @MultipartConfig
 @WebServlet("/admin/EditProductController")
 public class EditProductController extends HttpServlet {
 
+    // Lấy sản phẩm theo ID và chuyển sang form chỉnh sửa
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            int productId = Integer.parseInt(request.getParameter("id"));
+            ProductDAO dao = new ProductDAO();
+            Product product = dao.getProductById(productId);
+            List<Categories> categories = dao.getAllCategories();
+
+            if (product != null) {
+                request.setAttribute("product", product);
+                request.setAttribute("categories", categories);
+                request.getRequestDispatcher("/admin/editProducts.jsp").forward(request, response);
+            } else {
+                response.sendRedirect(request.getContextPath() + "/admin/GetProductAdminController");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/admin/GetProductAdminController");
+        }
+    }
+
+    // Xử lý cập nhật sản phẩm khi người dùng submit form
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
-            // Lấy dữ liệu từ form
+            request.setCharacterEncoding("UTF-8");
+
             int productId = Integer.parseInt(request.getParameter("productId"));
-            String productname = request.getParameter("productName");
+            String productName = request.getParameter("productName");
             String description = request.getParameter("productDescription");
             int price = Integer.parseInt(request.getParameter("productPrice"));
             int stock = Integer.parseInt(request.getParameter("productStock"));
-            int category = Integer.parseInt(request.getParameter("productCategoryType"));
-            Part filePart = request.getPart("productImages"); // Tên input trong form
+            String category = request.getParameter("productCategoryType");
+            Part filePart = request.getPart("productImages");
 
             // Lưu ảnh nếu có ảnh mới
             String savedImageName = null;
 //            if (filePart != null && filePart.getSize() > 0) {
 //                SaveImage saveImage = new SaveImage();
-//                savedImageName = saveImage.saveImage(filePart); // Trả về tên ảnh
+//                savedImageName = saveImage.saveImage(filePart);
 //            }
 
             // Tạo đối tượng Product
             Product product = new Product(
-                    productname,
+                    productId,
+                    category,
+                    productName,
                     description,
+                    savedImageName, // sẽ cập nhật ảnh nếu có
                     price,
                     stock,
-                    category
+                    null, // CreateDate không cần cập nhật
+                    null  // LastUpdateDate có thể cập nhật trong DAO nếu cần
             );
 
-            // Gọi DAO để cập nhật
             ProductDAO dao = new ProductDAO();
             boolean success = dao.editProduct(product, savedImageName);
 
             if (success) {
-                response.sendRedirect(request.getContextPath() + "/admin/productList.jsp");
+                response.sendRedirect(request.getContextPath() + "/admin/GetProductAdminController");
             } else {
                 request.setAttribute("error", "Cập nhật sản phẩm thất bại!");
-                request.getRequestDispatcher("/admin/editProduct.jsp").forward(request, response);
+                request.setAttribute("product", product);
+                request.getRequestDispatcher("/admin/editProducts.jsp").forward(request, response);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Đã xảy ra lỗi: " + e.getMessage());
-            request.getRequestDispatcher("/admin/editProduct.jsp").forward(request, response);
+            request.getRequestDispatcher("/admin/editProducts.jsp").forward(request, response);
         }
     }
 }

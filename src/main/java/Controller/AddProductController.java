@@ -1,6 +1,7 @@
 package Controller;
 
 import DAO.ProductDAO;
+import Model.Categories;
 import Model.Product;
 import Utils.SaveImage;
 import jakarta.servlet.ServletException;
@@ -11,12 +12,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import java.io.IOException;
+import java.util.List;
 
 
 @MultipartConfig
 @WebServlet("/admin/AddProductController")
 public class AddProductController extends HttpServlet {
 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Lấy ds loai sp
+        ProductDAO productDAO = new ProductDAO();
+        List<Categories> categories = productDAO.getAllCategories();
+        request.setAttribute("categories", categories);
+        System.out.println(categories.size());
+        request.getRequestDispatcher("/admin/addProducts.jsp").forward(request, response);
+    }
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("=== Bắt đầu xử lý đăng ký ===");
 
@@ -24,7 +34,7 @@ public class AddProductController extends HttpServlet {
         String description = request.getParameter("productDescription");
         int price = Integer.parseInt(request.getParameter("productPrice"));
         int stock = Integer.parseInt(request.getParameter("productStock"));
-        int category = Integer.parseInt(request.getParameter("productCategoryType"));
+        String category = request.getParameter("productCategoryType");
         // Lấy ảnh từ form
         Part filePart = request.getPart("productImages");
         String projectPath = System.getProperty("user.dir"); // thư mục gốc project

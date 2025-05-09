@@ -2,6 +2,7 @@ package DAO;
 
 import Database.DatabaseConnection;
 import Model.Product;
+import Model.Categories;
 import Utils.SaveImage;
 import org.jdbi.v3.core.Jdbi;
 
@@ -19,15 +20,48 @@ public class ProductDAO {
 
     //lấy ds sp
     public List<Product> getAllProduct() {
+        String sql = "SELECT p.ProductID, c.Name AS Categories, p.NameProduct, p.Description, " +
+                "i.imgURL AS Image, p.Price, p.Stock, p.CreateDate, p.LastUpdateDate " +
+                "FROM products p " +
+                "LEFT JOIN imgproducts i ON p.ProductID = i.ProductID " +
+                "LEFT JOIN categories c ON p.CategoriesID = c.CategoriesID";
+
+
         return jdbi.withHandle(handle ->
-                handle.createQuery("SELECT * FROM products")
+                handle.createQuery(sql)
                         .mapToBean(Product.class)
                         .list()
         );
     }
-    //    public Product getProductById(int id) {
-//
-//    }
+    //lay loai sp
+    public List<Categories> getAllCategories() {
+        String sql = "SELECT * FROM categories";
+
+
+        return jdbi.withHandle(handle ->
+                handle.createQuery(sql)
+                        .mapToBean(Categories.class)
+                        .list()
+        );
+    }
+    //lay sp theo Id
+    public Product getProductById(int id) {
+        String sql = "SELECT p.ProductID, c.Name AS Categories, p.NameProduct, p.Description, " +
+                "i.imgURL AS Image, p.Price, p.Stock, p.CreateDate, p.LastUpdateDate " +
+                "FROM products p " +
+                "LEFT JOIN imgproducts i ON p.ProductID = i.ProductID " +
+                "LEFT JOIN categories c ON p.CategoriesID = c.CategoriesID " +
+                "WHERE p.ProductID = :id";
+
+        return jdbi.withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("id", id)
+                        .mapToBean(Product.class)
+                        .findOne()
+                        .orElse(null)
+        );
+    }
+
     public boolean addProduct(Product product, String image) {
         try {
             return jdbi.withHandle(handle -> {
@@ -38,7 +72,7 @@ public class ProductDAO {
                         .bind("productDescription", product.getDescription() != null ? product.getDescription() : "")
                         .bind("productPrice", product.getPrice())
                         .bind("productStock", product.getStock())
-                        .bind("productCategoryType", product.getCategoriesID())
+                        .bind("productCategoryType", product.getCategories())
                         .bind("createDate", product.getCreateDate())
                         .bind("lastUpdateDate", product.getLastUpdateDate())
                         .executeAndReturnGeneratedKeys("ProductID")
@@ -79,7 +113,7 @@ public class ProductDAO {
                         .bind("productDescription", product.getDescription() != null ? product.getDescription() : "")
                         .bind("productPrice", product.getPrice())
                         .bind("productStock", product.getStock())
-                        .bind("productCategoryType", product.getCategoriesID())
+                        .bind("productCategoryType", product.getCategories())
                         .bind("lastUpdateDate", new java.sql.Timestamp(System.currentTimeMillis()))
                         .execute();
 
@@ -157,7 +191,9 @@ public class ProductDAO {
         SaveImage saveImage = new SaveImage();
      //   productDAO.addProduct(new Product("a", "a", 1, 100, 1),image);
 //        productDAO.deleteProduct(123);
-        productDAO.editProduct(new Product(122, "asd", "asd", 112, 1,3 ),"");
+        //productDAO.editProduct(new Product(122, "asd", "asd", 112, 1,3 ),"");
+        List<Product> p = productDAO.getAllProduct();
+        System.out.println(p.size());
     }
 }
 
