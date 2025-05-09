@@ -6,17 +6,6 @@
     <h6 class="mb-4">Chỉnh sửa Sản Phẩm</h6>
     <form action="submit_product.php" method="POST" enctype="multipart/form-data">
       <!-- ID and Category Type in the same row -->
-      <div class="mb-3 row">
-        <div class="col-md-6">
-          <label for="productID" class="form-label">ID Sản Phẩm</label>
-          <input type="text" class="form-control" id="productID" name="productID" value="1" required>
-        </div>
-        <div class="col-md-6">
-          <label for="productCategoryType" class="form-label">Loại Sản Phẩm</label>
-          <input type="text" class="form-control" id="productCategoryType" name="productCategoryType" value="Lọc nuớc RO" required>
-        </div>
-      </div>
-
       <!-- Product Name -->
       <div class="mb-3">
         <label for="productName" class="form-label">Tên Sản Phẩm</label>
@@ -25,24 +14,16 @@
 
       <!-- Price and Brand in the same row -->
       <div class="mb-3 row">
-        <div class="col-md-6">
+        <div class="col-md-4">
           <label for="productPrice" class="form-label">Giá</label>
           <input type="number" class="form-control" id="productPrice" name="productPrice" value="6390000" required>
         </div>
-        <div class="col-md-6">
-          <label for="productBrand" class="form-label">Thương Hiệu</label>
-          <input type="text" class="form-control" id="productBrand" name="productBrand" value="Sunshouse" required>
+        <div class="col-md-4">
+          <label for="productCategoryType" class="form-label">Loại Sản Phẩm</label>
+          <input type="text" class="form-control" id="productCategoryType" name="productCategoryType" value="Lọc nuớc RO" required>
         </div>
-      </div>
-
-      <!-- Quantity and Stock in the same row -->
-      <div class="mb-3 row">
-        <div class="col-md-6">
-          <label for="productQuantity" class="form-label">Số Lượng</label>
-          <input type="number" class="form-control" id="productQuantity" name="productQuantity" value="5" required>
-        </div>
-        <div class="col-md-6">
-          <label for="productStock" class="form-label">Tồn Kho</label>
+        <div class="col-md-4">
+          <label for="productStock" class="form-label">Số lượng</label>
           <input type="number" class="form-control" id="productStock" name="productStock" value="10" required>
         </div>
       </div>
