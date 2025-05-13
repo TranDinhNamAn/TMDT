@@ -192,6 +192,56 @@ public class CartDB {
             return false;
         }
     }
+
+    public List<Order> getOrdersByUserID(int userID) {
+        String sql = "SELECT * FROM orders WHERE UserID  = :userID  ORDER BY CreateDate DESC";
+
+        try {
+            return jdbi.withHandle(handle ->
+                    handle.createQuery(sql)
+                            .bind("userID", userID)
+                            .map((rs, ctx) -> new Order(
+                                    rs.getInt("OrderID"),
+                                    rs.getInt("UserID"),
+                                    rs.getString("FullName"),
+                                    rs.getInt("Phone"),
+                                    rs.getString("Status"),
+                                    rs.getString("CustomerNote"),
+                                    rs.getTimestamp("CreateDate"),
+                                    rs.getString("ShippingAddress"),
+                                    rs.getString("PaymentMethod"),
+                                    rs.getDouble("TotalAmount")
+                            ))
+                            .list()
+            );
+        } catch (Exception e) {
+            System.err.println("Lỗi khi lấy đơn hàng: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+    public List<OrderDetail> getOrderDetailsByOrderID(int orderID) {
+        String sql = "SELECT orderdetails.OrderID,products.NameProduct,orderdetails.Quantity,orderdetails.Price,orderdetails.DateAdd FROM orderdetails JOIN products ON orderdetails.ProductID = products.ProductID WHERE OrderID =:orderID ;";
+
+        try {
+            return jdbi.withHandle(handle ->
+                    handle.createQuery(sql)
+                            .bind("orderID", orderID)
+                            .map((rs, ctx) -> new OrderDetail(
+                                    rs.getInt("OrderID"),
+                                    rs.getString("NameProduct"),
+                                    rs.getInt("Quantity"),
+                                    rs.getDouble("Price"),
+                                    rs.getTimestamp("DateAdd")
+                            ))
+                            .list()
+            );
+        } catch (Exception e) {
+            System.err.println("Lỗi khi lấy chi tiết đơn hàng: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+
     public boolean cancelOrder(int orderID) {
         String sql = "UPDATE orders SET Status = :status WHERE OrderID = :orderID";
 
@@ -209,6 +259,7 @@ public class CartDB {
     }
 
 
+
     public static void main(String[] args) throws SQLException {
         CartDB cartDB = new CartDB();
 //        System.out.println(cartDB.getCartByUserID(4));
@@ -216,10 +267,11 @@ public class CartDB {
 //        cartDB.deleteCartItem(4,3);
 //        cartDB.updateCartItemQuantity(4,1,4);
 //        cartDB.getCartItemByUserAndProduct(4, 1);
-        List<OrderDetail> orderDetails = new ArrayList<>();
-        orderDetails.add(new OrderDetail(1,2,240.000,new Date()));
-        orderDetails.add(new OrderDetail(2,2,240.000,new Date()));
-        Order order = new Order(4,"a",12345,"đang xử lý","hàng dễ vỡ",new Date(),"a","Cash",120.000,orderDetails);
-        cartDB.insertOrderWithDetails(order);
+//        List<OrderDetail> orderDetails = new ArrayList<>();
+//        orderDetails.add(new OrderDetail(1,2,240.000,new Date()));
+//        orderDetails.add(new OrderDetail(2,2,240.000,new Date()));
+//        Order order = new Order(4,"a",12345,"đang xử lý","hàng dễ vỡ",new Date(),"a","Cash",120.000,orderDetails);
+//        cartDB.insertOrderWithDetails(order);
+        System.out.println(cartDB.getOrderDetailsByOrderID(12));
     }
 }

@@ -30,6 +30,20 @@ public class Order {
         this.listOrderDetail = listOrderDetail;
     }
 
+    public Order(int orderID, int userID, String fullName, int phone, String status, String customerNote, Date createDate, String shippingAddress, String paymentMethod, Double totalAmount) {
+        OrderID = orderID;
+        UserID = userID;
+        FullName = fullName;
+        Phone = phone;
+        Status = status;
+        CustomerNote = customerNote;
+        CreateDate = createDate;
+        ShippingAddress = shippingAddress;
+        PaymentMethod = paymentMethod;
+        TotalAmount = totalAmount;
+    }
+
+
     public String getFullName() {
         return FullName;
     }
