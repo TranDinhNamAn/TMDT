@@ -10,6 +10,13 @@ public class OrderDetail {
     private Double Price;
     private Date DateAdd;
 
+    public OrderDetail(int productID, int quantity, Double price, Date dateAdd) {
+        ProductID = productID;
+        Quantity = quantity;
+        Price = price;
+        DateAdd = dateAdd;
+    }
+
     public int getOrderDetailID() {
         return OrderDetailID;
     }
