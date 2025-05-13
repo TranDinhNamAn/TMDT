@@ -100,7 +100,7 @@
               <i class="fa fa-users me-2"></i>Người dùng
             </a>
             <div class="dropdown-menu bg-transparent border-0">
-              <a href="${pageContext.request.contextPath}/admin/listUsers.jsp"
+              <a href="${pageContext.request.contextPath}/admin/GetAllUserController"
                  class="dropdown-item ${currentPage.contains('listUsers.jsp') ? 'active' : ''}">
                 Danh sách người dùng
               </a>
