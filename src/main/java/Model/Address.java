@@ -102,4 +102,12 @@ public class Address {
     public void setUserType(int userType) {
         UserType = userType;
     }
+
+    @Override
+    public String toString() {
+        return  Street +
+                ", " + WardOrcommune +
+                ", " + District +
+                ", " + ProvinceOrCity;
+    }
 }

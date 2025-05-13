@@ -1,6 +1,7 @@
 package DAO;
 
 import Database.DatabaseConnection;
+import Model.Address;
 import Model.User;
 import org.jdbi.v3.core.Jdbi;
 
@@ -137,6 +138,36 @@ public class UserDao {
         }
     }
 
+    public List<Address> getAddressesByUserId(int userId) {
+        String sql = """
+        SELECT 
+            ua.UserID,
+            a.AddressID,
+            a.Street,
+            a.WardOrcommune,
+            a.District,
+            a.ProvinceOrCity
+        FROM useraddresses ua
+        JOIN address a ON ua.AddressID = a.AddressID
+        WHERE ua.UserID = :userId
+    """;
 
+        return jdbi.withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("userId", userId)
+                        .mapToBean(Address.class)
+                        .list()
+        );
+    }
+    public List<User> getAllUsersWithAddresses() {
+        List<User> users = getAllUsers(); // lấy danh sách người dùng
+
+        for (User user : users) {
+            List<Address> addresses = getAddressesByUserId(user.getUserID()); // lấy địa chỉ theo từng user
+            user.setAddress(addresses); // gán vào User
+        }
+
+        return users;
+    }
 
 }
