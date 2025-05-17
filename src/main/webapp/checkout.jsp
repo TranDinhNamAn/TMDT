@@ -1,4 +1,6 @@
 blog-details-2.jsp<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="Model.Cart" %>
 <jsp:include page="header.jsp" />
 <!-- Breadcrumb Begin -->
 <div class="breadcrumb-option">
@@ -18,7 +20,7 @@ blog-details-2.jsp<%@ page contentType="text/html;charset=UTF-8" language="java"
 <!-- Checkout Section Begin -->
 <section class="checkout spad">
   <div class="container">
-    <form action="#" class="checkout__form">
+    <form action="${pageContext.request.contextPath}/payment" method="post" class="checkout__form">
       <div class="row">
         <div class="col-lg-8">
           <h5>Chi tiết hóa đơn</h5>
@@ -26,33 +28,33 @@ blog-details-2.jsp<%@ page contentType="text/html;charset=UTF-8" language="java"
             <div class="col-lg-6 col-md-6 col-sm-6">
               <div class="checkout__form__input">
                 <p>Họ và tên<span>*</span></p>
-                <input type="text">
+                <input type="text" name="fullName">
               </div>
             </div>
 
             <div class="col-lg-12">
               <div class="checkout__form__input">
                 <p>Địa chỉ <span>*</span></p>
-                <input type="text" placeholder="Số nhà, tên đường, xã, huyện, tỉnh (chỉ giao hàng nội thành TPHCM)">
+                <input type="text" placeholder="Số nhà, tên đường, xã, huyện, tỉnh (chỉ giao hàng nội thành TPHCM)" name="address">
               </div>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-6">
               <div class="checkout__form__input">
                 <p>Điện thoại <span>*</span></p>
-                <input type="text">
+                <input type="text" name="phone">
               </div>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-6">
               <div class="checkout__form__input">
                 <p>Email <span>*</span></p>
-                <input type="text">
+                <input type="text" name="email">
               </div>
             </div>
             <div class="col-lg-12">
               <div class="checkout__form__input">
                 <p>Ghi chú <span>*</span></p>
                 <input type="text"
-                       placeholder="Lưu ý về đơn đặt hàng của bạn, ví dụ: giao giờ hành chính">
+                       placeholder="Lưu ý về đơn đặt hàng của bạn, ví dụ: giao giờ hành chính" name="note">
               </div>
             </div>
             <div class="col-lg-12">
@@ -73,29 +75,44 @@ blog-details-2.jsp<%@ page contentType="text/html;charset=UTF-8" language="java"
                   <span class="top__text">Sản phẩm</span>
                   <span class="top__text__right">Tổng cộng</span>
                 </li>
-                <li>01. Máy lọc nước RO <span>4.700.000đ</span></li>
-                <li>02. Máy lọc nước nóng<br /> lạnh Karofi <span>5.000.000đ</span></li>
-                <li>03. Lõi thay thế <span>500.000đ</span></li>
+                 <%
+                      List<Cart> cartItems = (List<Cart>) request.getAttribute("cartItems");
+                       if (cartItems != null) {
+                      int count = 1;
+                      for (Cart item : cartItems) {
+                    %>
+                        <li>
+                          <%= String.format("%02d. %s x %d", count++, item.getNameProduct(), item.getQuantity()) %>
+                          <span><%= String.format("%,.0fđ", item.getPrice() * item.getQuantity()) %></span>
+                        </li>
+                    <%
+                      }}
+                    %>
               </ul>
             </div>
             <div class="checkout__order__total">
               <ul>
                 <li>Được giảm <span>200.000đ</span></li>
-                <li>Tổng cộng <span>10.000.000đ</span></li>
+                <li><li>Tổng cộng <span>
+                <%
+                        Double totalPrice = (Double) request.getAttribute("totalPrice");
+                        out.print(totalPrice != null ? String.format("%,d VNĐ", totalPrice.longValue()) : "0 VNĐ");
+                    %>
+                </span></li></span></li>
               </ul>
             </div>
             <div class="checkout__order__widget">
               <p>Nếu bạn đã có tài khoản vui lòng đăng nhập trước khi thanh toán.</p>
-              <label for="check-payment">
-                Thanh toán tiền mặt
-                <input type="checkbox" id="check-payment">
-                <span class="checkmark"></span>
-              </label>
-              <label for="paypal">
-                Chuyển khoản
-                <input type="checkbox" id="paypal">
-                <span class="checkmark"></span>
-              </label>
+             <label for="cash">
+               Thanh toán tiền mặt
+               <input type="radio" name="paymentMethod" value="Cash" id="cash">
+               <span class="checkmark"></span>
+             </label>
+             <label for="bank">
+               Chuyển khoản
+               <input type="radio" name="paymentMethod" value="Bank Transfer" id="bank">
+               <span class="checkmark"></span>
+             </label>
             </div>
             <button type="submit" class="site-btn">Đặt hàng</button>
           </div>
