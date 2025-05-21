@@ -2,6 +2,7 @@ package DAO;
 
 import Database.DatabaseConnection;
 import Model.Address;
+import Model.Roles;
 import Model.User;
 import org.jdbi.v3.core.Jdbi;
 
@@ -169,5 +170,19 @@ public class UserDao {
 
         return users;
     }
+    public List<Roles> getUserRole(int userId) {
+        String sql = "SELECT r.roleID, r.roleName " +
+                "FROM users u " +
+                "JOIN employees e ON u.UserID = e.UserID " +
+                "JOIN user_roles ur ON e.EmployeeID = ur.EmployeeID " +
+                "JOIN roles r ON ur.roleID = r.roleID " +
+                "WHERE u.UserID = :userId";
 
+        return jdbi.withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("userId", userId)
+                        .mapToBean(Roles.class)
+                        .list()
+        );
+    }
 }

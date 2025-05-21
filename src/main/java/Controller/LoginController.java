@@ -1,5 +1,7 @@
 package Controller;
 
+import DAO.UserDao;
+import Model.Roles;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,6 +12,7 @@ import Model.User;
 import service.UserService;
 
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/LoginController")
 public class LoginController extends HttpServlet {
@@ -38,10 +41,21 @@ public class LoginController extends HttpServlet {
             session.setAttribute("user", user);
             session.setAttribute("avatar", user.getProfilePicture()); // Lưu URL avatar vào session
             session.setAttribute("name", user.getName()); // Lưu tên người dùng vào session
+            session.setAttribute("id", user.getUserID());//Lưu userID vào session
             session.setMaxInactiveInterval(30 * 60); // Thiết lập session hết hạn sau 30 phút
 
-            // Chuyển hướng đến trang dashboard sau khi đăng nhập thành công
-            response.sendRedirect(request.getContextPath() + "/index.jsp");
+            UserDao userDao = new UserDao();
+            List<Roles> roles = userDao.getUserRole(user.getUserID());
+
+            boolean isAdmin = roles.stream().anyMatch(r -> "admin".equalsIgnoreCase(r.getRoleName()));
+            boolean isEmployee = roles.stream().anyMatch(r -> r.getRoleName().toLowerCase().contains("employee_"));
+
+            // Điều hướng theo role
+            if (isAdmin || isEmployee) {
+                response.sendRedirect(request.getContextPath() + "/admin/indexAdmin.jsp");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/index.jsp");
+            }
         } else {
             request.setAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng!");
             request.getRequestDispatcher("/admin/login.jsp").forward(request, response);
