@@ -123,7 +123,7 @@
               <div class="tip">2</div>
             </a></li>
             <!-- Giỏ hàng -->
-            <li><a href="shop-cart.jsp"><span class="icon_bag_alt"></span>
+            <li><a href="shopping-cart"><span class="icon_bag_alt"></span>
               <div class="tip">2</div>
             </a></li>
           </ul>

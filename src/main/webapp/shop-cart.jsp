@@ -104,7 +104,7 @@
                       </span>
                   </li>
               </ul>
-              <a href="checkout.jsp" class="primary-btn">Tiến hành thanh toán</a>
+              <a href="payment" class="primary-btn">Tiến hành thanh toán</a>
           </div>
       </div>
   </div>
