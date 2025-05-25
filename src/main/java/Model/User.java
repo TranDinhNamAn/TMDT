@@ -5,6 +5,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import java.util.Date;
+import java.util.List;
 
 public class User {
     @Id
@@ -26,7 +27,7 @@ public class User {
     private Provider provider;
     private String ProfilePicture;
     private String Name;
-
+    private List<Address> Address;
 
     public enum Provider {
         FACEBOOK, GOOGLE, LOCAL
@@ -113,6 +114,17 @@ public class User {
         this.provider = Provider.FACEBOOK;
         this.ProfilePicture = profilePicture;
         this.Name = userName;
+    }
+    //lấy ds user từ trang admin
+    public User(int userID, String email, String phoneNumber, String userName, Date createDate, Date lastUpdateDate, String name, List<Address> Address) {
+        UserID = userID;
+        Email = email;
+        PhoneNumber = phoneNumber;
+        UserName = userName;
+        CreateDate = createDate;
+        LastUpdateDate = lastUpdateDate;
+        Name = name;
+        this.Address = Address;
     }
 
     public int getUserID() {
@@ -249,5 +261,27 @@ public class User {
 
     public void setName(String name) {
         Name = name;
+    }
+
+    public List<Address> getAddress() {
+        return Address;
+    }
+
+    public void setAddress(List<Address> Address) {
+        this.Address = Address;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "UserID=" + UserID +
+                ", Email='" + Email + '\'' +
+                ", PhoneNumber='" + PhoneNumber + '\'' +
+                ", UserName='" + UserName + '\'' +
+                ", CreateDate=" + CreateDate +
+                ", LastUpdateDate=" + LastUpdateDate +
+                ", Name='" + Name + '\'' +
+                ", listAddress=" + Address +
+                '}';
     }
 }
