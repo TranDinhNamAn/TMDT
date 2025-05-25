@@ -109,17 +109,22 @@ blog-details-2.jsp<%@ page contentType="text/html;charset=UTF-8" language="java"
                <span class="checkmark"></span>
              </label>
              <label for="bank">
-               Chuyển khoản
-               <input type="radio" name="paymentMethod" value="Bank Transfer" id="bank">
+               Thanh toán qua VNPay
+               <input type="radio" name="paymentMethod" value="vnpay" id="bank">
                <span class="checkmark"></span>
              </label>
-            </div>
+             <label for="paypal">
+               Thanh toán qua Paypal
+               <input type="radio" name="paymentMethod" value="paypal" id="paypal">
+               <span class="checkmark"></span>
+             </label>
             <button type="submit" class="site-btn">Đặt hàng</button>
           </div>
         </div>
       </div>
     </form>
   </div>
+<script src="js/ajax-payment-btn.js" defer></script>
 </section>
 <!-- Checkout Section End -->
 <jsp:include page="footer.jsp" />
