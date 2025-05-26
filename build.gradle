@@ -63,6 +63,7 @@ dependencies {
   implementation 'com.restfb:restfb:3.17.0'
 
   implementation 'org.json:json:20210307'
+  implementation 'com.paypal.sdk:checkout-sdk:1.0.3'
 
 }
 

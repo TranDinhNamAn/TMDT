@@ -47,6 +47,30 @@ public class PaymentController extends HttpServlet {
             String note = request.getParameter("note");
             String paymentMethod = request.getParameter("paymentMethod");
 
+            if ("vnpay".equals(paymentMethod)) {
+                // Lưu thông tin vào session để xử lý sau khi thanh toán
+                request.getSession().setAttribute("fullName", request.getParameter("fullName"));
+                request.getSession().setAttribute("address", request.getParameter("address"));
+                request.getSession().setAttribute("phone", request.getParameter("phone"));
+                request.getSession().setAttribute("email", request.getParameter("email"));
+                request.getSession().setAttribute("note", request.getParameter("note"));
+                request.getSession().setAttribute("paymentMethod", paymentMethod);
+                response.sendRedirect("vnpay");
+                return;
+            }
+            if ("paypal".equals(paymentMethod)) {
+                // Lưu thông tin vào session để xử lý sau khi thanh toán
+                request.getSession().setAttribute("fullName", request.getParameter("fullName"));
+                request.getSession().setAttribute("address", request.getParameter("address"));
+                request.getSession().setAttribute("phone", request.getParameter("phone"));
+                request.getSession().setAttribute("email", request.getParameter("email"));
+                request.getSession().setAttribute("note", request.getParameter("note"));
+                request.getSession().setAttribute("paymentMethod", paymentMethod);
+                response.sendRedirect("paypal");
+                return;
+            }
+
+
             // 2. Giả sử đã lấy được userID từ session (giả định bạn đã có User login)
             int userID = 4;
 
