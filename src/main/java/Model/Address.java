@@ -1,105 +1,50 @@
 package Model;
 
-import java.util.Date;
-
 public class Address {
-    private int AddressID;
-    private String Street;
-    private String WardOrcommune;
-    private String District;
-    private String ProvinceOrCity;
-    private String FullnameReceiver;
-    private String PhoneReceiver;
-    private String AddressType;
-    private boolean IsPrimary;
-    private Date LastUpdateDate;
-    private int UserType;
+    private int addressID; // AddressID trong database
+    private String street; // Tên đường
+    private String wardOrCommune; // Phường/Xã
+    private String district; // Quận/Huyện
+    private String provinceOrCity; // Tỉnh/Thành phố
 
+    // Getters and Setters
     public int getAddressID() {
-        return AddressID;
+        return addressID;
     }
 
     public void setAddressID(int addressID) {
-        AddressID = addressID;
+        this.addressID = addressID;
     }
 
     public String getStreet() {
-        return Street;
+        return street;
     }
 
     public void setStreet(String street) {
-        Street = street;
+        this.street = street;
     }
 
-    public String getWardOrcommune() {
-        return WardOrcommune;
+    public String getWardOrCommune() {
+        return wardOrCommune;
     }
 
-    public void setWardOrcommune(String wardOrcommune) {
-        WardOrcommune = wardOrcommune;
+    public void setWardOrCommune(String wardOrCommune) {
+        this.wardOrCommune = wardOrCommune;
     }
 
     public String getDistrict() {
-        return District;
+        return district;
     }
 
     public void setDistrict(String district) {
-        District = district;
+        this.district = district;
     }
 
     public String getProvinceOrCity() {
-        return ProvinceOrCity;
+        return provinceOrCity;
     }
 
     public void setProvinceOrCity(String provinceOrCity) {
-        ProvinceOrCity = provinceOrCity;
-    }
-
-    public String getFullnameReceiver() {
-        return FullnameReceiver;
-    }
-
-    public void setFullnameReceiver(String fullnameReceiver) {
-        FullnameReceiver = fullnameReceiver;
-    }
-
-    public String getPhoneReceiver() {
-        return PhoneReceiver;
-    }
-
-    public void setPhoneReceiver(String phoneReceiver) {
-        PhoneReceiver = phoneReceiver;
-    }
-
-    public String getAddressType() {
-        return AddressType;
-    }
-
-    public void setAddressType(String addressType) {
-        AddressType = addressType;
-    }
-
-    public boolean isPrimary() {
-        return IsPrimary;
-    }
-
-    public void setPrimary(boolean primary) {
-        IsPrimary = primary;
-    }
-
-    public Date getLastUpdateDate() {
-        return LastUpdateDate;
-    }
-
-    public void setLastUpdateDate(Date lastUpdateDate) {
-        LastUpdateDate = lastUpdateDate;
-    }
-
-    public int getUserType() {
-        return UserType;
-    }
-
-    public void setUserType(int userType) {
-        UserType = userType;
+        this.provinceOrCity = provinceOrCity;
     }
 }
