@@ -2,10 +2,7 @@ package Controller;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 import Model.User;
 import service.UserService;
 
@@ -31,14 +28,18 @@ public class LoginController extends HttpServlet {
 
         if (user != null) {
             // Xóa session cũ trước khi đăng nhập
-            request.getSession().invalidate();
+            HttpSession oldSession = request.getSession(false);
+            if (oldSession != null) {
+                oldSession.invalidate();
+            }
 
             // Tạo session mới
-            HttpSession session = request.getSession();
-            session.setAttribute("user", user);
-            session.setAttribute("avatar", user.getProfilePicture()); // Lưu URL avatar vào session
-            session.setAttribute("name", user.getName()); // Lưu tên người dùng vào session
-            session.setMaxInactiveInterval(30 * 60); // Thiết lập session hết hạn sau 30 phút
+            HttpSession session = request.getSession(true);
+            session.setAttribute("userId", user.getUserID());       // **Phải có để các servlet khác check**
+            session.setAttribute("user", user);                     // Có thể lưu đối tượng user
+            session.setAttribute("avatar", user.getProfilePicture());
+            session.setAttribute("name", user.getName());
+            session.setMaxInactiveInterval(30 * 60); // 30 phút
 
             // Chuyển hướng đến trang dashboard sau khi đăng nhập thành công
             response.sendRedirect(request.getContextPath() + "/index.jsp");
