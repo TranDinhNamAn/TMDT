@@ -266,12 +266,12 @@ public class CartDB {
 //        cartDB.insertCartItem(4, 3, 2,new Date());
 //        cartDB.deleteCartItem(4,3);
 //        cartDB.updateCartItemQuantity(4,1,4);
-//        cartDB.getCartItemByUserAndProduct(4, 1);
+        cartDB.getCartItemByUserAndProduct(4, 1);
 //        List<OrderDetail> orderDetails = new ArrayList<>();
 //        orderDetails.add(new OrderDetail(1,2,240.000,new Date()));
 //        orderDetails.add(new OrderDetail(2,2,240.000,new Date()));
 //        Order order = new Order(4,"a",12345,"đang xử lý","hàng dễ vỡ",new Date(),"a","Cash",120.000,orderDetails);
 //        cartDB.insertOrderWithDetails(order);
-        System.out.println(cartDB.getOrderDetailsByOrderID(12));
+//        System.out.println(cartDB.getOrderDetailsByOrderID(12));
     }
 }

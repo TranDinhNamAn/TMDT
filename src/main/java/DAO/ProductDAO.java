@@ -118,6 +118,36 @@ public class ProductDAO {
                         .list()
         );
     }
+    public void addFavourite(int userId, int productId) {
+        String sql = "INSERT INTO favoriteproducts (UserID , ProductID) VALUES (:userId, :productId)";
+        jdbi.useHandle(handle ->
+                handle.createUpdate(sql)
+                        .bind("userId", userId)
+                        .bind("productId", productId)
+                        .execute()
+        );
+    }
+
+    public void removeFavourite(int userId, int productId) {
+        String sql = "DELETE FROM favoriteproducts WHERE UserID = :userId AND ProductID = :productId";
+        jdbi.useHandle(handle ->
+                handle.createUpdate(sql)
+                        .bind("userId", userId)
+                        .bind("productId", productId)
+                        .execute()
+        );
+    }
+
+    public boolean isFavourite(int userId, int productId) {
+        String sql = "SELECT COUNT(*) FROM favoriteproducts WHERE UserID = :userId AND ProductID = :productId";
+        return jdbi.withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("userId", userId)
+                        .bind("productId", productId)
+                        .mapTo(Integer.class)
+                        .one() > 0
+        );
+    }
 
     public boolean addProduct(Product product, String image) {
         try {
@@ -251,8 +281,9 @@ public class ProductDAO {
         //productDAO.editProduct(new Product(122, "asd", "asd", 112, 1,3 ),"");
 //        List<Product> p = productDAO.getAllProduct();
 //        System.out.println(p.size());
-        List<Product> products = productDAO.getProductsByPriceRange(1);
-        System.out.println(products.size());
+//        List<Product> products = productDAO.getProductsByPriceRange(1);
+//        System.out.println(products.size());
+        productDAO.addFavourite(4,2);
     }
 }
 
