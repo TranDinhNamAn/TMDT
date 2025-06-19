@@ -1,4 +1,4 @@
-blog-details-2.jsp<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="Model.Cart" %>
 <jsp:include page="header.jsp" />
@@ -92,7 +92,6 @@ blog-details-2.jsp<%@ page contentType="text/html;charset=UTF-8" language="java"
             </div>
             <div class="checkout__order__total">
               <ul>
-                <li>Được giảm <span>200.000đ</span></li>
                 <li><li>Tổng cộng <span>
                 <%
                         Double totalPrice = (Double) request.getAttribute("totalPrice");

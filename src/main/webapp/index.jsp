@@ -92,8 +92,12 @@
                                     <img src="Image/<%= p.getImage() %>" alt="Ảnh sản phẩm" style="width: 70px; height: 70px; object-fit: cover;">
                                 </a>
                                 </li>
-                                <li><a href="#"><span class="icon_heart_alt"></span></a></li>
-                                <li><a href="shopping-cart.jsp"><span class="icon_bag_alt"></span></a></li>
+                              <li>
+                                <a class="add-fav" data-productid="<%= p.getProductID() %>">
+                                  <span class="icon_heart_alt"></span>
+                                </a>
+                              </li>
+                                <li><a href="shopping-cart"><span class="icon_bag_alt"></span></a></li>
                             </ul>
                         </div>
                         <div class="product__item__text">
@@ -158,42 +162,43 @@
             </div>
         </div>
     </div>
+<script src ="js/add_fav.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const searchInput = document.getElementById("searchInput");
-    const categoryFilter = document.getElementById("categoryFilter");
-    const priceFilter = document.getElementById("priceFilter");
-    const productContainer = document.querySelector(".property__gallery");
+const searchInput = document.getElementById("searchInput");
+const categoryFilter = document.getElementById("categoryFilter");
+const priceFilter = document.getElementById("priceFilter");
+const productContainer = document.querySelector(".property__gallery");
 
-    searchInput.addEventListener("input", filterProducts);
-    categoryFilter.addEventListener("change", filterProducts);
-    priceFilter.addEventListener("change", filterProducts);
+searchInput.addEventListener("input", filterProducts);
+categoryFilter.addEventListener("change", filterProducts);
+priceFilter.addEventListener("change", filterProducts);
 
-    function filterProducts() {
-        const name = searchInput.value.trim();
-        const category = categoryFilter.value !== "*" ? categoryFilter.value : "";
-        const price = priceFilter.value !== "*" ? priceFilter.value : "";
+function filterProducts() {
+    const name = searchInput.value.trim();
+    const category = categoryFilter.value !== "*" ? categoryFilter.value : "";
+    const price = priceFilter.value !== "*" ? priceFilter.value : "";
 
-        const formData = new URLSearchParams();
-        formData.append("searchInput", name);
-        formData.append("categoryFilter", category);
-        formData.append("priceFilter", price);
+    const formData = new URLSearchParams();
+    formData.append("searchInput", name);
+    formData.append("categoryFilter", category);
+    formData.append("priceFilter", price);
 
-        fetch("filter-list", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: formData
-        })
-        .then(response => response.text())
-        .then(html => {
-            productContainer.innerHTML = html;
-        })
-        .catch(error => {
-            console.error("Lỗi khi tải sản phẩm:", error);
-        });
-    }
+    fetch("filter-list", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: formData
+    })
+    .then(response => response.text())
+    .then(html => {
+        productContainer.innerHTML = html;
+    })
+    .catch(error => {
+        console.error("Lỗi khi tải sản phẩm:", error);
+    });
+}
 });
 </script>
 </section>

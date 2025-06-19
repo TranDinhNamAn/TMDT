@@ -34,14 +34,16 @@
           <h3><%= product.getNameProduct() %></h3>
           <div class="product__details__price"><%= product.getPrice() %> đ</div>
           <p><%= product.getDescription() %></p>
-          <form action="product-detail" method="post">
              <input type="hidden" name="id" value="<%= product.getProductID() %>">
-            <button type="submit" name="action" value="add_to_cart" class="btn btn-primary">Thêm vào giỏ hàng</button>
-            <button type="submit" name="action" value="buy_now" class="btn btn-success">Mua ngay</button>
-            <button type="submit" name="action" value="add_to_wishlist" class="btn btn-light">
-              <i class="fa fa-heart"></i>
+            <button id="add-to-cart-btn" class="btn btn-primary" data-productid="<%= product.getProductID() %>">
+                Thêm vào giỏ hàng
             </button>
-          </form>
+
+           <button>
+               <a class="add-fav" data-productid="<%= product.getProductID() %>">
+                 <span class="icon_heart_alt"></span>
+               </a>
+           </button>
         </div>
       </div>
       <div class="col-lg-12">
@@ -67,6 +69,28 @@
       </div>
     </div>
   </div>
+<script src ="js/add_fav.js"></script>
+<script>
+document.getElementById("add-to-cart-btn").addEventListener("click", function() {
+    const productId = this.getAttribute("data-productid");
+
+    fetch("add-to-cart", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "productId=" + encodeURIComponent(productId)
+    })
+    .then(response => response.text())
+    .then(message => {
+        alert(message);
+    })
+    .catch(error => {
+        alert("Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.");
+        console.error("Lỗi:", error);
+    });
+});
+</script>
 </section>
 <!-- Product Details Section End -->
 <jsp:include page="footer.jsp" />

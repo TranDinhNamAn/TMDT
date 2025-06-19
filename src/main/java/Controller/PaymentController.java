@@ -91,7 +91,7 @@ public class PaymentController extends HttpServlet {
             List<OrderDetail> orderDetails = new ArrayList<>();
             Date now = new Date();
             for (Cart item : cartItems) {
-                OrderDetail detail = new OrderDetail(item.getProductID(), item.getQuantity(), item.getPrice() * item.getQuantity(), new Date());
+                OrderDetail detail = new OrderDetail(item.getProductID(), item.getQuantity(), item.getPrice(), new Date());
                 orderDetails.add(detail);
             }
 
