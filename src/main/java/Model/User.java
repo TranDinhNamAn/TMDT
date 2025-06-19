@@ -77,6 +77,25 @@ public class User {
         this.ProfilePicture = profilePicture;
         this.Name = null;
     }
+    //thêm nv
+    public User(String email,String phoneNumber, String userName, String epassword, boolean isBlocked, Provider provider, String profilePicture, String name) {
+        this.Email = email;
+        this.PhoneNumber = phoneNumber;
+        this.UserName = userName;
+        this.Epassword = epassword;
+        this.IsBlocked = false;
+        this.Status = "active";
+        this.Rank = "none";
+        this.Point = 0;
+        this.CreateDate = new Date();
+        this.LastUpdateDate = new Date();
+        this.LastLoginDate = new Date();
+        this.FacebookID = null;
+        this.GoogleID = null;
+        this.provider = Provider.LOCAL;
+        this.ProfilePicture = profilePicture;
+        this.Name = name;
+    }
 
     // Constructor cho đăng nhập Google
     public User(String email, String userName, Provider provider) {

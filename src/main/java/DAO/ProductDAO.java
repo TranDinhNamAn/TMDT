@@ -5,11 +5,11 @@ import Model.Product;
 import Model.Categories;
 import Utils.SaveImage;
 import org.jdbi.v3.core.Jdbi;
-
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
+
 import java.util.List;
 
 public class ProductDAO {
@@ -25,7 +25,8 @@ public class ProductDAO {
                 "i.imgURL AS Image, p.Price, p.Stock, p.CreateDate, p.LastUpdateDate " +
                 "FROM products p " +
                 "LEFT JOIN imgproducts i ON p.ProductID = i.ProductID " +
-                "LEFT JOIN categories c ON p.CategoriesID = c.CategoriesID";
+                "LEFT JOIN categories c ON p.CategoriesID = c.CategoriesID" +
+                " ORDER BY p.CreateDate DESC";
 
 
         return jdbi.withHandle(handle ->
@@ -231,12 +232,10 @@ public class ProductDAO {
     public boolean deleteProduct(int productId) {
         try {
             return jdbi.withHandle(handle -> {
-                // Xóa bản ghi ảnh trước
                 handle.createUpdate("DELETE FROM imgproducts WHERE ProductID = :productID")
                         .bind("productID", productId)
                         .execute();
 
-                // Sau đó xóa sản phẩm
                 return handle.createUpdate("DELETE FROM products WHERE ProductID = :productID")
                         .bind("productID", productId)
                         .execute() > 0;
@@ -246,44 +245,22 @@ public class ProductDAO {
             return false;
         }
     }
+//tìm kiếm sp
+public List<Product> searchProductsByName(String keyword) {
+    String sql = "SELECT p.ProductID, c.Name AS Categories, p.NameProduct, p.Description, " +
+            "i.imgURL AS Image, p.Price, p.Stock, p.CreateDate, p.LastUpdateDate " +
+            "FROM products p " +
+            "LEFT JOIN imgproducts i ON p.ProductID = i.ProductID " +
+            "LEFT JOIN categories c ON p.CategoriesID = c.CategoriesID " +
+            "WHERE p.NameProduct LIKE :keyword " +
+            "ORDER BY p.CreateDate DESC";
 
-    public boolean deleteProduct2(int productId) {
-        try {
-            return jdbi.withHandle(handle -> {
-                // Lấy tên file ảnh từ bảng imgproducts
-                String imageName = handle.createQuery("SELECT imgURL FROM imgproducts WHERE ProductID = :productID")
-                        .bind("productID", productId)
-                        .mapTo(String.class)
-                        .findOne()
-                        .orElse(null);
-
-                // Xóa bản ghi ảnh trước (nếu cần)
-                handle.createUpdate("DELETE FROM imgproducts WHERE ProductID = :productID")
-                        .bind("productID", productId)
-                        .execute();
-
-                // Xóa sản phẩm
-                return handle.createUpdate("DELETE FROM products WHERE ProductID = :productID")
-                        .bind("productID", productId)
-                        .execute() > 0;
-            });
-        } catch (Exception e) {
-            System.err.println("Lỗi khi xóa sản phẩm: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public static void main(String[] args) {
-        ProductDAO productDAO = new ProductDAO();
-//        SaveImage saveImage = new SaveImage();
-     //   productDAO.addProduct(new Product("a", "a", 1, 100, 1),image);
-//        productDAO.deleteProduct(123);
-        //productDAO.editProduct(new Product(122, "asd", "asd", 112, 1,3 ),"");
-//        List<Product> p = productDAO.getAllProduct();
-//        System.out.println(p.size());
-//        List<Product> products = productDAO.getProductsByPriceRange(1);
-//        System.out.println(products.size());
-        productDAO.addFavourite(4,2);
-    }
+    return jdbi.withHandle(handle ->
+            handle.createQuery(sql)
+                    .bind("keyword", "%" + keyword + "%")
+                    .mapToBean(Product.class)
+                    .list()
+    );
+}
 }
 

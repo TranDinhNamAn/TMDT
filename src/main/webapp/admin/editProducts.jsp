@@ -79,6 +79,7 @@
         %>
         <img src="<%= request.getContextPath() + "/Image/" + imageUrl %>"
              class="img-thumbnail" style="width: 120px; height: 120px;" />
+        <input type="hidden" name="oldImageName" value="<%= imageUrl %>"/>
         <%
         } else {
         %>
