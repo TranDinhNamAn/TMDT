@@ -144,7 +144,7 @@
               </span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="<%=request.getContextPath()%>/profile.jsp">Thông tin cá nhân</a></li>
+              <li><a class="dropdown-item" href="<%=request.getContextPath()%>/UpdateProfileController">Thông tin cá nhân</a></li>
               <li><a class="dropdown-item" href="<%=request.getContextPath()%>/LogoutController">Đăng xuất</a></li>
             </ul>
           </div>

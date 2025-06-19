@@ -4,10 +4,7 @@ import DAO.UserDao;
 import Model.Roles;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 import Model.User;
 import service.UserService;
 
@@ -34,7 +31,10 @@ public class LoginController extends HttpServlet {
 
         if (user != null) {
             // Xóa session cũ trước khi đăng nhập
-            request.getSession().invalidate();
+            HttpSession oldSession = request.getSession(false);
+            if (oldSession != null) {
+                oldSession.invalidate();
+            }
 
             // Tạo session mới
             HttpSession session = request.getSession();
@@ -43,6 +43,7 @@ public class LoginController extends HttpServlet {
             session.setAttribute("name", user.getName()); // Lưu tên người dùng vào session
             session.setAttribute("id", user.getUserID());//Lưu userID vào session
             session.setMaxInactiveInterval(30 * 60); // Thiết lập session hết hạn sau 30 phút
+
 
             UserDao userDao = new UserDao();
             List<Roles> roles = userDao.getUserRole(user.getUserID());

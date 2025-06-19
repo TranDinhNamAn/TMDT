@@ -62,7 +62,7 @@ public class UserDao {
     public boolean registerUser(User user) {
         try {
             return jdbi.withHandle(handle ->
-                    handle.createUpdate("INSERT INTO users (Email, PhoneNumber, UserName, Epassword, IsBlocked, Status, `Rank`, Point, CreateDate, LastUpdateDate, LastLoginDate, FacebookID, GoogleID, Provider, ProfilePicture, Name) " +
+                    handle.createUpdate("INSERT INTO users (Email, PhoneNumber, UserName, Epassword, IsBlocked, Status, Rank, Point, CreateDate, LastUpdateDate, LastLoginDate, FacebookID, GoogleID, Provider, ProfilePicture, Name) " +
                                     "VALUES (:email, :phone, :username, :password, :isBlocked, :status, :rank, :point, :createDate, :lastUpdateDate, :lastLoginDate, :facebookID, :googleID, :provider, :profilePicture, :name)")
                             .bind("email", user.getEmail())
                             .bind("phone", user.getPhoneNumber() != null ? user.getPhoneNumber() : "")
@@ -89,23 +89,26 @@ public class UserDao {
         }
     }
 
-    // Cập nhật thông tin user (không cập nhật mật khẩu)
+
     public boolean updateUser(User user) {
         try {
             return jdbi.withHandle(handle ->
-                    handle.createUpdate("UPDATE users SET PhoneNumber = :phone, UserName = :username, Rank = :rank, ProfilePicture = :profilePicture, LastUpdateDate = NOW() WHERE Email = :email")
+                    handle.createUpdate("UPDATE users SET Name = :name, PhoneNumber = :phone, UserName = :username, `Rank` = :rank, ProfilePicture = :profilePicture, LastUpdateDate = NOW() WHERE UserID = :userID")
+                            .bind("name", user.getName())
                             .bind("phone", user.getPhoneNumber())
                             .bind("username", user.getUserName())
-                            .bind("rank", user.getRank())
+                            .bind("rank", user.getRank() != null ? user.getRank() : "newbie")
                             .bind("profilePicture", user.getProfilePicture())
-                            .bind("email", user.getEmail())
-                            .execute() > 0
+                            .bind("userID", user.getUserID())
+                            .execute() >= 0 // luôn trả true nếu không lỗi
             );
         } catch (Exception e) {
             System.err.println("Lỗi khi cập nhật user: " + e.getMessage());
             return false;
         }
     }
+
+
 
     // Cập nhật mật khẩu bằng email (dùng cho quên mật khẩu)
     public boolean updatePassword(String email, String hashedPassword) {

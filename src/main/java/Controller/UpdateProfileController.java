@@ -1,90 +1,175 @@
-//package Controller;
-//
-//import jakarta.servlet.ServletException;
-//import jakarta.servlet.annotation.WebServlet;
-//import jakarta.servlet.http.HttpServlet;
-//import jakarta.servlet.http.HttpServletRequest;
-//import jakarta.servlet.http.HttpServletResponse;
-//import jakarta.servlet.http.HttpSession;
-//import Model.User;
-//import service.UserService;
-//
-//import java.io.IOException;
-//
-//@WebServlet("/UpdateProfileController")
-//public class UpdateProfileController extends HttpServlet {
-//    private UserService userService;
-//
-//    @Override
-//    public void init() throws ServletException {
-//        userService = new UserService();
-//    }
-//
-//    @Override
-//    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-//            throws ServletException, IOException {
-//        // Kiểm tra người dùng có đang đăng nhập không
-//        HttpSession session = request.getSession();
-//        Integer userId = (Integer) session.getAttribute("userId");
-//
-//        if (userId == null) {
-//            // Nếu chưa đăng nhập, điều hướng về trang login
-//            response.sendRedirect(request.getContextPath() + "/admin/login.jsp");
-//            return;
-//        }
-//
-//        // Lấy thông tin người dùng từ database
-//        User user = userService.getUserById(userId);
-//
-//        if (user == null) {
-//            response.getWriter().println("Không tìm thấy thông tin người dùng.");
-//            return;
-//        }
-//
-//        // Gửi thông tin người dùng đến JSP
-//        request.setAttribute("user", user);
-//        request.getRequestDispatcher("/admin/profile.jsp").forward(request, response);
-//    }
-//
-//
-//    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-//            throws ServletException, IOException {
-//        // Xác thực người dùng đang đăng nhập
-//        HttpSession session = request.getSession();
-//        Integer userId = (Integer) session.getAttribute("userId");
-//
-//        if (userId == null) {
-//            response.sendRedirect(request.getContextPath() + "/admin/login.jsp"); // Chuyển hướng nếu chưa đăng nhập
-//            return;
-//        }
-//
-//        // Lấy dữ liệu từ form
-//        String name = request.getParameter("name");
-//        String username = request.getParameter("username");
-//        String phone = request.getParameter("phone");
-//        String address = request.getParameter("address");
-//        String profilePicture = request.getParameter("profile_picture");
-//
-//        // Tạo đối tượng User từ dữ liệu form
-//        User user = new User();
-//        user.setId(userId);
-//        user.setName(name);
-//        user.setUsername(username);
-//        user.setPhone(phone);
-//        user.setAddress(address);
-//        user.setProfilePicture(profilePicture);
-//
-//        // Gửi yêu cầu cập nhật thông tin qua Service
-//        boolean isUpdated = userService.updateUser(user);
-//
-//        // Xử lý kết quả
-//        if (isUpdated) {
-//            request.setAttribute("message", "Cập nhật thành công!");
-//            request.getRequestDispatcher("/admin/profile.jsp").forward(request, response); // Không hủy session
-//        } else {
-//            request.setAttribute("message", "Cập nhật thất bại!");
-//            request.getRequestDispatcher("/admin/profile.jsp").forward(request, response);
-//        }
-//    }
-//
-//}
+package Controller;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.*;
+import Model.User;
+import Model.Address;
+import Model.UserAddress;
+import service.UserService;
+import service.AddressService;
+import service.UserAddressService;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+@WebServlet("/UpdateProfileController")
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 5 * 1024 * 1024,
+        maxRequestSize = 10 * 1024 * 1024
+)
+public class UpdateProfileController extends HttpServlet {
+    private UserService userService;
+    private AddressService addressService;
+    private UserAddressService userAddressService;
+
+    @Override
+    public void init() throws ServletException {
+        userService = new UserService();
+        addressService = new AddressService();
+        userAddressService = new UserAddressService();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/login.jsp");
+            return;
+        }
+
+        Integer userId = (Integer) session.getAttribute("userId");
+        User user = userService.getUserById(userId);
+        session.setAttribute("user", user);
+
+        UserAddress userAddress = userAddressService.getUserAddressByUserId(userId);
+        Address address = null;
+
+        if (userAddress != null && userAddress.getAddressID() > 0) {
+            address = addressService.getAddressById(userAddress.getAddressID());
+        }
+
+        request.setAttribute("user", user);
+        request.setAttribute("address", address);
+        request.setAttribute("userAddress", userAddress);
+
+        request.getRequestDispatcher("/profile.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/login.jsp");
+            return;
+        }
+
+        Integer userId = (Integer) session.getAttribute("userId");
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            request.setAttribute("message", "Người dùng không tồn tại");
+            request.getRequestDispatcher("/profile.jsp").forward(request, response);
+            return;
+        }
+
+        String name = request.getParameter("name");
+        String userName = request.getParameter("username");
+        String phoneNumber = request.getParameter("phone");
+
+        // Xử lý upload ảnh
+        Part filePart = request.getPart("profile_picture");
+        String profilePicture = user.getProfilePicture();
+        if (filePart != null && filePart.getSize() > 0 && filePart.getSubmittedFileName() != null && !filePart.getSubmittedFileName().isEmpty()) {
+            String fileName = System.currentTimeMillis() + "_" + Paths.get(filePart.getSubmittedFileName()).getFileName();
+            String uploadPath = getServletContext().getRealPath("/uploads");
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+            String fullSavePath = uploadPath + File.separator + fileName;
+            filePart.write(fullSavePath);
+            profilePicture = "uploads/" + fileName;
+        }
+
+        String street = request.getParameter("street");
+        String wardOrCommune = request.getParameter("wardOrCommune");
+        String district = request.getParameter("district");
+        String provinceOrCity = request.getParameter("provinceOrCity");
+        String fullnameReceiver = request.getParameter("fullnameReceiver");
+        String phoneReceiver = request.getParameter("phoneReceiver");
+        String addressType = request.getParameter("addressType");
+
+        boolean isUserChanged =
+                (name != null && !name.equals(user.getName() != null ? user.getName() : "")) ||
+                        (userName != null && !userName.equals(user.getUserName() != null ? user.getUserName() : "")) ||
+                        (phoneNumber != null && !phoneNumber.equals(user.getPhoneNumber() != null ? user.getPhoneNumber() : "")) ||
+                        (profilePicture != null && !profilePicture.equals(user.getProfilePicture() != null ? user.getProfilePicture() : ""));
+
+        boolean userUpdated = false;
+        if (isUserChanged) {
+            user.setName(name);
+            user.setUserName(userName);
+            user.setPhoneNumber(phoneNumber);
+            user.setProfilePicture(profilePicture);
+            userUpdated = userService.updateUser(user);
+        }
+
+        UserAddress userAddress = userAddressService.getUserAddressByUserId(userId);
+        Address address = null;
+
+        if (userAddress == null) {
+            userAddress = new UserAddress();
+            userAddress.setUserID(userId);
+            userAddress.setIsPrimary(true);
+            String currentDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            userAddress.setCreateDate(currentDate);
+            userAddress.setLastUpdateDate(currentDate);
+        } else {
+            address = addressService.getAddressById(userAddress.getAddressID());
+        }
+
+        if (address == null) {
+            address = new Address();
+            address.setStreet(street);
+            address.setWardOrCommune(wardOrCommune);
+            address.setDistrict(district);
+            address.setProvinceOrCity(provinceOrCity);
+            addressService.saveOrUpdateAddress(address);
+            userAddress.setAddressID(address.getAddressID());
+        } else {
+            address.setStreet(street);
+            address.setWardOrCommune(wardOrCommune);
+            address.setDistrict(district);
+            address.setProvinceOrCity(provinceOrCity);
+            addressService.saveOrUpdateAddress(address);
+            userAddress.setAddressID(address.getAddressID());
+        }
+
+        userAddress.setFullnameReceiver(fullnameReceiver);
+        userAddress.setPhoneReceiver(phoneReceiver);
+        userAddress.setAddressType(addressType);
+        userAddress.setLastUpdateDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+
+        boolean userAddressUpdated = userAddressService.saveOrUpdateUserAddress(userAddress);
+
+        if (userUpdated || userAddressUpdated) {
+            request.setAttribute("message", "Cập nhật thành công!");
+        } else {
+            request.setAttribute("message", "Không có thay đổi nào được lưu.");
+        }
+
+        User updatedUser = userService.getUserById(userId);
+        Address updatedAddress = addressService.getAddressById(userAddress.getAddressID());
+
+        session.setAttribute("user", updatedUser);
+        request.setAttribute("user", updatedUser);
+        request.setAttribute("address", updatedAddress);
+        request.setAttribute("userAddress", userAddress);
+        request.getRequestDispatcher("/profile.jsp").forward(request, response);
+    }
+}
