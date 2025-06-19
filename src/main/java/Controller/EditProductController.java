@@ -13,7 +13,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
 
 @MultipartConfig
 @WebServlet("/admin/EditProductController")
@@ -57,26 +60,34 @@ public class EditProductController extends HttpServlet {
             int price = Integer.parseInt(request.getParameter("productPrice"));
             int stock = Integer.parseInt(request.getParameter("productStock"));
             String category = request.getParameter("productCategoryType");
+            String oldImageName = request.getParameter("oldImageName");
             Part filePart = request.getPart("productImages");
+            String uploadPath = getServletContext().getRealPath("/Image");
+            String uploadPath2 = "D:\\CKTMDT1\\src\\main\\webapp\\Image";
 
-            // Lưu ảnh nếu có ảnh mới
-            String savedImageName = null;
-//            if (filePart != null && filePart.getSize() > 0) {
-//                SaveImage saveImage = new SaveImage();
-//                savedImageName = saveImage.saveImage(filePart);
-//            }
+            String savedImageName = oldImageName;
 
-            // Tạo đối tượng Product
+            if (filePart != null && filePart.getSize() > 0) {
+                String originalFileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+                String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+                String imageName = UUID.randomUUID().toString() + extension;
+
+                SaveImage saveImage = new SaveImage();
+                savedImageName = saveImage.saveImage(filePart, uploadPath, imageName);
+                saveImage.saveImage(filePart, uploadPath2, imageName);
+            }
+
+            // Tạo đối tượng Product với ảnh (có thể là ảnh cũ nếu không upload ảnh mới)
             Product product = new Product(
                     productId,
                     category,
                     productName,
                     description,
-                    savedImageName, // sẽ cập nhật ảnh nếu có
+                    savedImageName,
                     price,
                     stock,
-                    null, // CreateDate không cần cập nhật
-                    null  // LastUpdateDate có thể cập nhật trong DAO nếu cần
+                    null,
+                    new Timestamp(System.currentTimeMillis())
             );
 
             ProductDAO dao = new ProductDAO();

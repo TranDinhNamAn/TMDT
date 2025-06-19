@@ -7,6 +7,14 @@
   <div class="col-12">
     <div class="bg-light rounded h-100 p-4">
       <h6 class="mb-4">Danh sách sản phẩm</h6>
+
+      <!-- Ô tìm kiếm sản phẩm -->
+      <form id="searchForm" class="mb-3">
+        <div class="input-group">
+          <input type="text" id="searchInput" name="keyword" class="form-control" placeholder="Tìm kiếm sản phẩm...">
+        </div>
+      </form>
+
       <div class="table-responsive">
         <table class="table">
           <thead>
@@ -21,7 +29,7 @@
             <th>Tùy chọn</th>
           </tr>
           </thead>
-          <tbody>
+          <tbody id="productTableBody">
           <%
             List<Product> productList = (List<Product>) request.getAttribute("products");
             if (productList != null) {
@@ -35,11 +43,15 @@
             <td><%= p.getCreateDate() %></td>
             <td><%= p.getLastUpdateDate() %></td>
             <td>
-
-              <img src="${pageContext.request.contextPath}/Image/<%= p.getImage() %>" alt="" style="width: 60px; height: 60px; object-fit: cover;"></td>
+              <img src="${pageContext.request.contextPath}/Image/<%= p.getImage() %>" alt="" style="width: 60px; height: 60px; object-fit: cover;">
+            </td>
             <td>
               <a href="EditProductController?id=<%= p.getProductID() %>" class="text-warning me-2"><i class="fa fa-edit"></i></a>
-              <a href="DeleteProductController?id=<%= p.getProductID() %>" class="text-danger"><i class="fa fa-trash"></i></a>
+              <a href="DeleteProductController?id=<%= p.getProductID() %>"
+                 class="text-danger"
+                 onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?');">
+                <i class="fa fa-trash"></i>
+              </a>
             </td>
           </tr>
           <%
@@ -47,7 +59,7 @@
           } else {
           %>
           <tr>
-            <td colspan="10" class="text-center">Không có sản phẩm nào</td>
+            <td colspan="8" class="text-center">Không có sản phẩm nào</td>
           </tr>
           <%
             }
@@ -58,5 +70,26 @@
     </div>
   </div>
 </div>
+
+<!-- Script AJAX tìm kiếm -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('#searchInput').on('input', function () {
+      let keyword = $(this).val().trim();
+      $.ajax({
+        type: 'POST',
+        url:'${pageContext.request.contextPath}/admin/SearchProductController',
+        data: { keyword: keyword },
+        success: function (response) {
+          $('#productTableBody').html(response);
+        },
+        error: function () {
+          $('#productTableBody').html('<tr><td colspan="8" class="text-center text-danger">Lỗi khi tìm kiếm</td></tr>');
+        }
+      });
+    });
+  });
+</script>
 
 <jsp:include page="/admin/footer.jsp" />
