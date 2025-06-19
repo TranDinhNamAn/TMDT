@@ -21,7 +21,11 @@ public class EmployeePermission implements Filter {
         protectedPaths.put("/admin/EditProductController", "Employee_EDITPRODUCT");
         protectedPaths.put("/admin/DeleteProductController", "Employee_DELETEPRODUCT");
         protectedPaths.put("/admin/GetAllUserController", "Employee");
-        // Thêm các nếu cần
+        protectedPaths.put("/admin/indexAdmin.jsp", "Admin,Employee");
+        protectedPaths.put("/admin/EditEmployeeController", "Admin");
+        protectedPaths.put("/admin/AddEmployeeController", "Admin");
+        protectedPaths.put("/admin/DeleteEmployeeController", "Admin");
+        // Thêm nếu cần
     }
 
     @Override
@@ -48,9 +52,29 @@ public class EmployeePermission implements Filter {
         UserDao userDao = new UserDao();
         List<Roles> roles = userDao.getUserRole(userId);
         boolean isAdmin = roles.stream()
-                .anyMatch(role -> "admin".equalsIgnoreCase(role.getRoleName()));
-        boolean hasPermission = isAdmin || roles.stream()
-                .anyMatch(role -> requiredRole.equalsIgnoreCase(role.getRoleName()));
+                .anyMatch(role -> "Admin".equalsIgnoreCase(role.getRoleName()));
+        if (isAdmin) {
+            chain.doFilter(request, response);
+            return;
+        }
+        List<String> requiredRoles = Arrays.asList(requiredRole.split(","));
+        boolean hasPermission = roles.stream().anyMatch(userRole -> {
+            String roleName = userRole.getRoleName();
+
+            for (String required : requiredRoles) {
+                required = required.trim();
+                if (required.equalsIgnoreCase("Admin") && roleName.equalsIgnoreCase("Admin")) {
+                    return true;
+                }
+                if (required.equalsIgnoreCase(roleName)) {
+                    return true;
+                }
+                if (required.equalsIgnoreCase("Employee") && roleName.startsWith("Employee")) {
+                    return true;
+                }
+            }
+            return false;
+        });
 
         if (hasPermission) {
             chain.doFilter(request, response);

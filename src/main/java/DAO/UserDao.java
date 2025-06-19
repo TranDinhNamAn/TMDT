@@ -58,7 +58,6 @@ public class UserDao {
         );
     }
 
-
     // Đăng ký user mới
     public boolean registerUser(User user) {
         try {
@@ -89,8 +88,6 @@ public class UserDao {
             return false;
         }
     }
-
-
 
     // Cập nhật thông tin user (không cập nhật mật khẩu)
     public boolean updateUser(User user) {
@@ -183,6 +180,102 @@ public class UserDao {
                         .bind("userId", userId)
                         .mapToBean(Roles.class)
                         .list()
+        );
+    }
+    public List<User> getEmployee() {
+        String sql = "SELECT DISTINCT u.UserID, u.Name, u.Username, u.Email, u.PhoneNumber " +
+                "FROM users u " +
+                "INNER JOIN employees e ON u.UserID = e.UserID " +
+                "LEFT JOIN user_roles ur ON e.EmployeeID = ur.EmployeeID " +
+                "LEFT JOIN roles r ON ur.roleID = r.roleID " +
+                "WHERE u.UserID NOT IN ( " +
+                "    SELECT u2.UserID " +
+                "    FROM users u2 " +
+                "    INNER JOIN employees e2 ON u2.UserID = e2.UserID " +
+                "    INNER JOIN user_roles ur2 ON e2.EmployeeID = ur2.EmployeeID " +
+                "    INNER JOIN roles r2 ON ur2.roleID = r2.roleID " +
+                "    WHERE r2.roleName = 'Admin' " +
+                ")";
+
+        return jdbi.withHandle(handle ->
+                handle.createQuery(sql)
+                        .mapToBean(User.class)
+                        .list()
+        );
+    }
+
+    public int addEmployee(int userId) {
+        String sqlInsert = "INSERT INTO employees (UserID) VALUES (:userId)";
+        return jdbi.withHandle(handle -> {
+            // Thực hiện insert
+            handle.createUpdate(sqlInsert)
+                    .bind("userId", userId)
+                    .execute();
+
+            // Lấy employeeID tự động tăng vừa tạo
+            Integer employeeId = handle.createQuery("SELECT LAST_INSERT_ID()")
+                    .mapTo(Integer.class)
+                    .one();
+
+            return employeeId != null ? employeeId : -1;
+        });
+    }
+
+    public List<Roles> getAllRoles() {
+        String sql = "SELECT roleID, roleName FROM roles";
+        return jdbi.withHandle(handle ->
+                handle.createQuery(sql)
+                        .mapToBean(Roles.class)
+                        .list()
+        );
+    }
+    public int getRoleIdByName(String roleName) {
+        String sql = "SELECT RoleID FROM roles WHERE RoleName = :roleName";
+        return jdbi.withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("roleName", roleName)
+                        .mapTo(Integer.class)
+                        .findOne()
+                        .orElse(-1)
+        );
+    }
+    public void addRoles(int employeeId, int roleId) {
+        String sql = "INSERT INTO user_roles (EmployeeID, RoleID) VALUES (:employeeId, :roleId)";
+        jdbi.useHandle(handle ->
+                handle.createUpdate(sql)
+                        .bind("employeeId", employeeId)
+                        .bind("roleId", roleId)
+                        .execute()
+        );
+    }
+    public void updateUser(int userId, String username, String name, String email, String phone) {
+        String sql = "UPDATE users SET UserName = :username, Name = :name, Email = :email, PhoneNumber = :phone WHERE UserID = :userId";
+        jdbi.useHandle(handle ->
+                handle.createUpdate(sql)
+                        .bind("username", username)
+                        .bind("name", name)
+                        .bind("email", email)
+                        .bind("phone", phone)
+                        .bind("userId", userId)
+                        .execute()
+        );
+    }
+
+    public void clearUserRoles(int employeeId) {
+        String sql = "DELETE FROM user_roles WHERE EmployeeID = :employeeId";
+        jdbi.useHandle(handle ->
+                handle.createUpdate(sql)
+                        .bind("employeeId", employeeId)
+                        .execute()
+        );
+    }
+    public int getEmployeeIdByUserId(int userId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("SELECT EmployeeID FROM employees WHERE UserID = :userId")
+                        .bind("userId", userId)
+                        .mapTo(Integer.class)
+                        .findOne()
+                        .orElseThrow(() -> new RuntimeException("Employee not found for userId: " + userId))
         );
     }
 }

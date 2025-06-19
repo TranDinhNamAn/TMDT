@@ -12,7 +12,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 
 @MultipartConfig
@@ -28,20 +30,21 @@ public class AddProductController extends HttpServlet {
         request.getRequestDispatcher("/admin/addProducts.jsp").forward(request, response);
     }
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("=== Bắt đầu xử lý đăng ký ===");
 
         String productname = request.getParameter("productName");
         String description = request.getParameter("productDescription");
         int price = Integer.parseInt(request.getParameter("productPrice"));
         int stock = Integer.parseInt(request.getParameter("productStock"));
         String category = request.getParameter("productCategoryType");
-        // Lấy ảnh từ form
         Part filePart = request.getPart("productImages");
-        String projectPath = System.getProperty("user.dir"); // thư mục gốc project
-        String uploadPath = projectPath + "/src/main/webapp/Image";
-
+        String uploadPath = getServletContext().getRealPath("/Image");
+        String uploadPath2 = "D:\\CKTMDT1\\src\\main\\webapp\\Image";
+        String originalFileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+        String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        String imageName = UUID.randomUUID().toString() + extension;
         SaveImage saveImage = new SaveImage();
-        String savedImageName = saveImage.saveImage(filePart, uploadPath);
+        String savedImageName = saveImage.saveImage(filePart, uploadPath, imageName);
+        saveImage.saveImage(filePart, uploadPath2, imageName);
 
         System.out.println("ten: " + productname);
         System.out.println("mota: " + description);
@@ -63,7 +66,7 @@ public class AddProductController extends HttpServlet {
         if (isAdded) {
             System.out.println("Thêm sp thành công.");
             System.out.println("Upload Path: "+ savedImageName);
-            response.sendRedirect(request.getContextPath() + "/admin/addProducts.jsp");
+            response.sendRedirect(request.getContextPath() + "/admin/GetProductAdminController");
         } else {
             System.out.println("Thêm sp thất bại");
             request.setAttribute("error", "Có lỗi xảy ra, vui lòng thử lại!");

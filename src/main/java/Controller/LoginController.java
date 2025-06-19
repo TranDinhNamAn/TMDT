@@ -46,7 +46,7 @@ public class LoginController extends HttpServlet {
 
             UserDao userDao = new UserDao();
             List<Roles> roles = userDao.getUserRole(user.getUserID());
-
+            session.setAttribute("role", roles);
             boolean isAdmin = roles.stream().anyMatch(r -> "admin".equalsIgnoreCase(r.getRoleName()));
             boolean isEmployee = roles.stream().anyMatch(r -> r.getRoleName().toLowerCase().contains("employee_"));
 
