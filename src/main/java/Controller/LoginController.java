@@ -42,6 +42,7 @@ public class LoginController extends HttpServlet {
             session.setAttribute("avatar", user.getProfilePicture()); // Lưu URL avatar vào session
             session.setAttribute("name", user.getName()); // Lưu tên người dùng vào session
             session.setAttribute("id", user.getUserID());//Lưu userID vào session
+            session.setAttribute("userId", user.getUserID());
             session.setMaxInactiveInterval(30 * 60); // Thiết lập session hết hạn sau 30 phút
 
 
@@ -55,7 +56,7 @@ public class LoginController extends HttpServlet {
             if (isAdmin || isEmployee) {
                 response.sendRedirect(request.getContextPath() + "/admin/indexAdmin.jsp");
             } else {
-                response.sendRedirect(request.getContextPath() + "/index.jsp");
+                response.sendRedirect(request.getContextPath() + "/Home");
             }
         } else {
             request.setAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng!");

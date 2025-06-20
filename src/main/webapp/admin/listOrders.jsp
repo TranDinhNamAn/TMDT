@@ -1,3 +1,7 @@
+<%@ page import="Model.Order" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.Date" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <jsp:include page="header.jsp" />
 <!-- Table Start -->
@@ -20,71 +24,54 @@
           </tr>
           </thead>
           <tbody>
+          <%
+            List<Order> orders = (List<Model.Order>) request.getAttribute("orders");
+            if (orders != null) {
+              for (Model.Order order : orders) {
+          %>
           <tr>
-            <th scope="row">DH001</th>
-            <td>Xuân</td>
-            <td>15/11/2024</td>
-            <td>Cư xá E, Đại học Nông Lâm TP.HCM</td>
-            <td>Đã giao</td>
-            <td>Lầu 4</td>
-            <td>15.000.000 VNĐ</td>
+            <th scope="row"><%= order.getOrderID() %></th>
+            <td><%= order.getFullName() %></td>
+            <%
+              SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+              String formattedDate = sdf.format(order.getCreateDate());
+            %>
+            <td><%= formattedDate %></td>
+            <td><%= order.getShippingAddress() %></td>
+            <form action="${pageContext.request.contextPath}/admin/update-order" method="post" class="d-flex align-items-center">
+              <input type="hidden" name="orderId" value="<%= order.getOrderID() %>">
             <td>
-              <!-- Cột Tùy chọn với các icon -->
-              <a href="editOrder.html" class="text-warning me-2"><i class="fa fa-edit"></i></a>
-              <a href="javascript:void(0);" class="text-danger delete-icon" data-id="1">
-                <i class="fa fa-trash"></i>
-              </a>
+                <!-- Dropdown chọn trạng thái -->
+                <select name="status" class="form-select form-select-sm me-2">
+                  <option value=""><%=order.getStatus()%></option>
+                  <option value="Pending">Pending</option>
+                  <option value="Shipping">Shipping</option>
+                  <option value="Delivered">Delivered</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
             </td>
+            <td><%= order.getCustomerNote() %></td>
+            <td><%= order.getTotalAmount() %> VNĐ</td>
+              <td class="text-center">
+                <button type="submit"
+                        class="btn btn-warning btn-sm d-block mx-auto"
+                        title="Lưu trạng thái"
+                        onclick="return confirm('Bạn có muốn cập nhật đơn hàng này không?');">
+                  <i class="fa fa-save"></i>
+                </button>
+              </td>
+            </form>
           </tr>
+          <%
+            }
+          } else {
+          %>
           <tr>
-            <th scope="row">DH002</th>
-            <td>Quốc</td>
-            <td>15/11/2024</td>
-            <td>Thanh Vĩnh Đông, Châu Thành, Long An</td>
-            <td>Đã giao</td>
-            <td></td>
-            <td>25.000.000 VNĐ</td>
-            <td>
-              <!-- Cột Tùy chọn với các icon -->
-              <a href="editOrder.html" class="text-warning me-2"><i class="fa fa-edit"></i></a>
-              <a href="javascript:void(0);" class="text-danger delete-icon" data-id="1">
-                <i class="fa fa-trash"></i>
-              </a>
-            </td>
+            <td colspan="8" class="text-center">Không có đơn hàng nào</td>
           </tr>
-          <tr>
-            <th scope="row">DH003</th>
-            <td>Nguyễn Ly</td>
-            <td>28/11/2024</td>
-            <td>Chợ nhỏ Nông Lâm, Đông Hòa, Dĩ An, Bình Dương</td>
-            <td>Đang vận chuyển</td>
-            <td></td>
-            <td>10.000.000 VNĐ</td>
-            <td>
-              <!-- Cột Tùy chọn với các icon -->
-              <a href="editOrder.html" class="text-warning me-2"><i class="fa fa-edit"></i></a>
-              <a href="javascript:void(0);" class="text-danger delete-icon" data-id="1">
-                <i class="fa fa-trash"></i>
-              </a>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">DH004</th>
-            <td>Luân</td>
-            <td>28/11/2024</td>
-            <td>Đường đất Nông Lâm, Đông Hòa, Dĩ An, Bình Dương</td>
-            <td>Đang vận chuyển</td>
-            <td>Trọ cuối đường</td>
-            <td>12.000.000 VNĐ</td>
-            <td>
-              <!-- Cột Tùy chọn với các icon -->
-              <a href="editOrder.html" class="text-warning me-2"><i class="fa fa-edit"></i></a>
-              <a href="javascript:void(0);" class="text-danger delete-icon" data-id="1">
-                <i class="fa fa-trash"></i>
-              </a>
-            </td>
-          </tr>
+          <% } %>
           </tbody>
+
         </table>
       </div>
     </div>

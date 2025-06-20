@@ -108,7 +108,7 @@ public class PaymentController extends HttpServlet {
                 response.sendRedirect("shopping-cart");
             } else {
                 request.setAttribute("error", "Lỗi khi đặt hàng. Vui lòng thử lại.");
-                request.getRequestDispatcher("payment").forward(request, response);
+                request.getRequestDispatcher("paypal-success").forward(request, response);
             }
 
         } catch (Exception e) {

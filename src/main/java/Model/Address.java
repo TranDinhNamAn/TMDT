@@ -50,9 +50,11 @@ public class Address {
 
     @Override
     public String toString() {
-        return  Street +
-                ", " + WardOrcommune +
-                ", " + District +
-                ", " + ProvinceOrCity;
+        return addressID +
+                ", " + street +
+                ", " + wardOrCommune +
+                ", " + district  +
+                ", " + provinceOrCity
+               ;
     }
 }
