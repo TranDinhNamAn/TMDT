@@ -225,7 +225,7 @@ public class UserDao {
     }
 
     public List<Roles> getAllRoles() {
-        String sql = "SELECT roleID, roleName FROM roles";
+        String sql = "SELECT roleID, roleName FROM roles WHERE roleName != 'Admin'";
         return jdbi.withHandle(handle ->
                 handle.createQuery(sql)
                         .mapToBean(Roles.class)
@@ -281,4 +281,14 @@ public class UserDao {
                         .orElseThrow(() -> new RuntimeException("Employee not found for userId: " + userId))
         );
     }
+
+    public void deleteEmployee(int empID) {
+        jdbi.useHandle(handle -> {
+
+            handle.createUpdate("DELETE FROM employees WHERE UserID = :id")
+                    .bind("id", empID)
+                    .execute();
+        });
+    }
+
 }

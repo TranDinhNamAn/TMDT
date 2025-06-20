@@ -22,6 +22,7 @@ public class EmployeePermission implements Filter {
         protectedPaths.put("/admin/DeleteProductController", "Employee_DELETEPRODUCT");
         protectedPaths.put("/admin/GetAllUserController", "Employee");
         protectedPaths.put("/admin/indexAdmin.jsp", "Admin,Employee");
+        protectedPaths.put("/admin/GetProductAdminController", "Admin,Employee");
         protectedPaths.put("/admin/EditEmployeeController", "Admin");
         protectedPaths.put("/admin/AddEmployeeController", "Admin");
         protectedPaths.put("/admin/DeleteEmployeeController", "Admin");
