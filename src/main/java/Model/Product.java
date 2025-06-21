@@ -26,6 +26,16 @@ public class Product {
         CreateDate = createDate;
         LastUpdateDate = lastUpdateDate;
     }
+
+    public Product(int productID, String nameProduct, String description, String image, int price, int stock) {
+        ProductID = productID;
+        NameProduct = nameProduct;
+        Description = description;
+        Image = image;
+        Price = price;
+        Stock = stock;
+    }
+
     //thêm sp
     public Product(String nameProduct, String description, int price, int stock, String categories) {
         NameProduct = nameProduct;

@@ -48,11 +48,11 @@ public class Address {
         this.provinceOrCity = provinceOrCity;
     }
 
-    @Override
-    public String toString() {
-        return  Street +
-                ", " + WardOrcommune +
-                ", " + District +
-                ", " + ProvinceOrCity;
-    }
+//    @Override
+//    public String toString() {
+//        return   Street +
+//                ", " + WardOrcommune +
+//                ", " + District +
+//                ", " + ProvinceOrCity;
+//    }
 }

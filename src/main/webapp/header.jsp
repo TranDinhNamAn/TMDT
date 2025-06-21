@@ -119,7 +119,7 @@
         <div class="header__right">
           <ul class="header__right__widget" style="margin-right: 20px; margin-bottom: 0px;">
             <!-- Wishlist -->
-            <li><a href="wish_lists.jsp"><span class="icon_heart_alt"></span>
+            <li><a href="favorite-products"><span class="icon_heart_alt"></span>
               <div class="tip">2</div>
             </a></li>
             <!-- Giỏ hàng -->
@@ -145,6 +145,7 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" href="<%=request.getContextPath()%>/UpdateProfileController">Thông tin cá nhân</a></li>
+               <li><a class="dropdown-item" href="<%=request.getContextPath()%>/Order">Đơn hàng của bạn/a></li>
               <li><a class="dropdown-item" href="<%=request.getContextPath()%>/LogoutController">Đăng xuất</a></li>
             </ul>
           </div>

@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.sql.*" %>
+<%@ page import="Model.Product" %>
+<%@ page import="java.util.List" %>
+
 <jsp:include page="header.jsp" />
+
 <!-- Breadcrumb Begin -->
 <div class="breadcrumb-option">
   <div class="container">
@@ -21,93 +24,90 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-3 col-md-3">
-        <div class="shop__sidebar">
-          <div class="sidebar__categories">
-            <div class="section-title active">
-              <h4>Nhãn hàng</h4>
-            </div>
-            <div class="categories__accordion">
-              <div class="accordion" id="accordionExample">
-                <div class="card">
-                  <div class="card-heading">
-                    <a data-toggle="collapse" data-target="#collapseOne">Kangaroo</a>
-                  </div>
-                  <div id="collapseOne" class="collapse" data-parent="#accordionExample">
-                    <div class="card-body">
-                      <ul>
-                        <li><a href="#"> Kangaroo KG100HU </a></li>
-                        <li><a href="#"> Kangaroo KG110A </a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                <!-- Add other brands similarly -->
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- Sidebar giữ nguyên -->
       </div>
+
       <div class="col-lg-9 col-md-9">
         <div class="row">
           <%
-            String jdbcUrl = "jdbc:mysql://localhost:3306/your_database_name";
-            String username = "your_username";
-            String password = "your_password";
-            Connection connection = null;
-            Statement statement = null;
-            ResultSet resultSet = null;
-
-            try {
-              Class.forName("com.mysql.cj.jdbc.Driver");
-              connection = DriverManager.getConnection(jdbcUrl, username, password);
-              String sql = "SELECT * FROM favorites WHERE user_id = ?";
-              PreparedStatement preparedStatement = connection.prepareStatement(sql);
-              preparedStatement.setInt(1, userId); // userId cần được xác định (có thể từ session)
-              resultSet = preparedStatement.executeQuery();
-
-              while (resultSet.next()) {
-                int productId = resultSet.getInt("product_id");
-                String productName = getProductName(productId); // Hàm lấy tên sản phẩm từ ID
-                String productImage = getProductImage(productId); // Hàm lấy hình ảnh sản phẩm từ ID
-                double productPrice = getProductPrice(productId); // Hàm lấy giá sản phẩm từ ID
+              List<Product> favoriteProducts = (List<Product>) request.getAttribute("favoriteProducts");
+              if (favoriteProducts != null && !favoriteProducts.isEmpty()) {
+                  for (Product p : favoriteProducts) {
           %>
-          <div class="col-lg-4 col-md-6">
-            <div class="product__item">
-              <div class="product__item__pic set-bg" data-setbg="<%= productImage %>">
-                <ul class="product__hover">
-                  <li><a href="<%= productImage %>" class="image-popup"><span class="arrow_expand"></span></a></li>
-                  <li><a href="wish_lists.jsp"><span class="icon_heart_alt"></span></a></li>
-                  <li><a href="shop-cart.jsp"><span class="icon_bag_alt"></span></a></li>
-                </ul>
+          <div class="col-lg-3 col-md-4 col-sm-6 mix">
+              <div class="product__item">
+                  <div class="product__item__pic set-bg">
+                      <img src="Image/<%= p.getImage() %>" style="width: 100%; height: 270px; object-fit: cover;" alt="<%= p.getNameProduct() %>">
+                      <ul class="product__hover">
+                          <li>
+                              <a href="Image/<%= p.getImage() %>" class="image-popup">
+                                  <img src="Image/<%= p.getImage() %>" alt="Ảnh sản phẩm" style="width: 70px; height: 70px; object-fit: cover;">
+                              </a>
+                          </li>
+                          <li>
+                              <a class="add-fav" data-productid="<%= p.getProductID() %>">
+                                  <span class="icon_heart_alt"></span>
+                              </a>
+                          </li>
+                          <li>
+                              <a href="shopping-cart"><span class="icon_bag_alt"></span></a>
+                          </li>
+                      </ul>
+                  </div>
+                  <div class="product__item__text">
+                      <h6><a href="product-detail?id=<%= p.getProductID() %>"><%= p.getNameProduct() %></a></h6>
+                      <div class="rating">
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                          <i class="fa fa-star"></i>
+                      </div>
+                      <div class="product__price"><%= p.getPrice() %> VNĐ</div>
+                  </div>
               </div>
-              <div class="product__item__text">
-                <h6><a href="product-details.jsp?id=<%= productId %>"><%= productName %></a></h6>
-                <div class="product__price"><%= productPrice %> VNĐ</div>
-              </div>
-            </div>
+          </div>
+          <%
+                  }
+              } else {
+          %>
+          <div class="col-12">
+              <p>Không có sản phẩm yêu thích nào.</p>
           </div>
           <%
               }
-            } catch (SQLException | ClassNotFoundException e) {
-              e.printStackTrace();
-            } finally {
-              if (resultSet != null) resultSet.close();
-              if (statement != null) statement.close();
-              if (connection != null) connection.close();
-            }
           %>
-          <div class="col-lg-12 text-center">
-            <div class="pagination__option">
-              <a href="wish_lists.jsp">1</a>
-              <a href="wish_lists.jsp">2</a>
-              <a href="wish_lists.jsp">3</a>
-              <a href="wish_lists.jsp"><i class="fa fa-angle-right"></i></a>
-            </div>
-          </div>
         </div>
       </div>
     </div>
   </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('.add-fav').on('click', function (e) {
+      e.preventDefault();
+      const productId = $(this).data('productid');
+
+      if (confirm("Bạn có muốn xóa sản phẩm này khỏi yêu thích?")) {
+        $.ajax({
+          url: 'remove-favorite',
+          method: 'POST',
+          data: {
+            productId: productId
+          },
+          success: function (res) {
+            alert("Đã xoá khỏi danh sách yêu thích!");
+            location.reload(); // Tải lại trang để cập nhật danh sách
+          },
+          error: function () {
+            alert("Có lỗi xảy ra, vui lòng thử lại!");
+          }
+        });
+      }
+    });
+  });
+</script>
 </section>
 <!-- Shop Section End -->
 <jsp:include page="footer.jsp" />
