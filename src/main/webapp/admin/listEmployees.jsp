@@ -53,7 +53,8 @@
               <a href="${pageContext.request.contextPath}/admin/EditEmployeeController?id=<%= employee.getUserID() %>" class="text-warning me-2">
                 <i class="fa fa-edit"></i>
               </a>
-              <a href="${pageContext.request.contextPath}deleteEmployee?id=<%= employee.getUserID() %>" class="text-danger">
+              <a href="${pageContext.request.contextPath}/admin/DeleteEmployeeController?id=<%= employee.getUserID() %>" class="text-danger"
+                 onclick="return confirm('Bạn có chắc chắn muốn xóa nhân viên này không?');">
                 <i class="fa fa-trash"></i>
               </a>
             </td>

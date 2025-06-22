@@ -219,6 +219,31 @@ public class CartDB {
             return new ArrayList<>();
         }
     }
+    public List<Order> getAllOrders() {
+        String sql = "SELECT * FROM orders ORDER BY CreateDate DESC";
+
+        try {
+            return jdbi.withHandle(handle ->
+                    handle.createQuery(sql)
+                            .map((rs, ctx) -> new Order(
+                                    rs.getInt("OrderID"),
+                                    rs.getInt("UserID"),
+                                    rs.getString("FullName"),
+                                    rs.getInt("Phone"),
+                                    rs.getString("Status"),
+                                    rs.getString("CustomerNote"),
+                                    rs.getTimestamp("CreateDate"),
+                                    rs.getString("ShippingAddress"),
+                                    rs.getString("PaymentMethod"),
+                                    rs.getDouble("TotalAmount")
+                            ))
+                            .list()
+            );
+        } catch (Exception e) {
+            System.err.println("Lỗi khi lấy đơn hàng: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
     public List<OrderDetail> getOrderDetailsByOrderID(int orderID) {
         String sql = "SELECT orderdetails.OrderID,products.NameProduct,orderdetails.Quantity,orderdetails.Price,orderdetails.DateAdd FROM orderdetails JOIN products ON orderdetails.ProductID = products.ProductID WHERE OrderID =:orderID ;";
 
@@ -257,6 +282,22 @@ public class CartDB {
             return false;
         }
     }
+    public boolean updateOrder(int orderID, String status) {
+        String sql = "UPDATE orders SET Status = :status WHERE OrderID = :orderID";
+
+        try {
+            return jdbi.withHandle(handle ->
+                    handle.createUpdate(sql)
+                            .bind("status", status)
+                            .bind("orderID", orderID)
+                            .execute() > 0
+            );
+        } catch (Exception e) {
+            System.err.println("Lỗi khi hủy đơn hàng: " + e.getMessage());
+            return false;
+        }
+    }
+
 
 
 

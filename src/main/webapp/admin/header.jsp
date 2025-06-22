@@ -132,13 +132,9 @@
               <i class="fa fa-shopping-cart me-2"></i>Đơn hàng
             </a>
             <div class="dropdown-menu bg-transparent border-0">
-              <a href="${pageContext.request.contextPath}/admin/listOrders.jsp"
+              <a href="${pageContext.request.contextPath}/admin/GetAllOrdersController"
                  class="dropdown-item ${currentPage.contains('listOrders.jsp') ? 'active' : ''}">
                 Danh sách đơn hàng
-              </a>
-              <a href="${pageContext.request.contextPath}/admin/addOrders.jsp"
-                 class="dropdown-item ${currentPage.contains('addOrders.jsp') ? 'active' : ''}">
-                Thêm đơn hàng
               </a>
             </div>
           </div>
