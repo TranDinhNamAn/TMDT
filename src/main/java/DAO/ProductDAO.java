@@ -1,15 +1,11 @@
 package DAO;
 
 import Database.DatabaseConnection;
-import Model.Product;
 import Model.Categories;
-import Utils.SaveImage;
+import Model.Product;
 import org.jdbi.v3.core.Jdbi;
-import java.io.File;
-import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.Date;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ProductDAO {
@@ -35,6 +31,7 @@ public class ProductDAO {
                         .list()
         );
     }
+
     public List<Product> getProductsByCategory(int categoryId) {
         String sql = "SELECT p.ProductID, c.Name AS Categories, p.NameProduct, p.Description, " +
                 "i.imgURL AS Image, p.Price, p.Stock, p.CreateDate, p.LastUpdateDate " +
@@ -50,6 +47,7 @@ public class ProductDAO {
                         .list()
         );
     }
+
     //lay loai sp
     public List<Categories> getAllCategories() {
         String sql = "SELECT * FROM categories";
@@ -61,6 +59,7 @@ public class ProductDAO {
                         .list()
         );
     }
+
     //lay sp theo Id
     public Product getProductById(int id) {
         String sql = "SELECT p.ProductID, c.Name AS Categories, p.NameProduct, p.Description, " +
@@ -78,6 +77,7 @@ public class ProductDAO {
                         .orElse(null)
         );
     }
+
     public List<Product> getProductsByName(String name) {
         String sql = "SELECT p.ProductID, c.Name AS Categories, p.NameProduct, p.Description, " +
                 "i.imgURL AS Image, p.Price, p.Stock, p.CreateDate, p.LastUpdateDate " +
@@ -93,6 +93,7 @@ public class ProductDAO {
                         .list()
         );
     }
+
     public List<Product> getProductsByPriceRange(int priceType) {
         String sql = "SELECT p.ProductID, c.Name AS Categories, p.NameProduct, p.Description, " +
                 "i.imgURL AS Image, p.Price, p.Stock, p.CreateDate, p.LastUpdateDate " +
@@ -119,6 +120,7 @@ public class ProductDAO {
                         .list()
         );
     }
+
     public void addFavourite(int userId, int productId) {
         String sql = "INSERT INTO favoriteproducts (UserID , ProductID) VALUES (:userId, :productId)";
         jdbi.useHandle(handle ->
@@ -149,6 +151,37 @@ public class ProductDAO {
                         .one() > 0
         );
     }
+
+    public List<Product> getFavouriteProducts(int userId) {
+        String sql = """
+                SELECT 
+                    p.ProductID ,
+                    p.NameProduct,
+                    p.Price ,
+                    p.Description ,
+                    p.Stock ,
+                    i.imgURL 
+                FROM favoriteproducts f
+                JOIN products p ON f.ProductID = p.ProductID
+                JOIN imgproducts i ON p.ProductID = i.ProductID
+                WHERE f.UserID = :userId
+                """;
+
+        return jdbi.withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("userId", userId)
+                        .map((rs, ctx) -> new Product(
+                                rs.getInt("ProductID"),
+                                rs.getString("NameProduct"),
+                                rs.getString("Description"),
+                                rs.getString("imgURL"),
+                                rs.getInt("Price"),
+                                rs.getInt("Stock")
+                        ))
+                        .list()
+        );
+    }
+
 
     public boolean addProduct(Product product, String image) {
         try {
@@ -182,6 +215,7 @@ public class ProductDAO {
             return false;
         }
     }
+
     //sửa sp
     public boolean editProduct(Product product, String image) {
         try {
@@ -245,22 +279,29 @@ public class ProductDAO {
             return false;
         }
     }
-//tìm kiếm sp
-public List<Product> searchProductsByName(String keyword) {
-    String sql = "SELECT p.ProductID, c.Name AS Categories, p.NameProduct, p.Description, " +
-            "i.imgURL AS Image, p.Price, p.Stock, p.CreateDate, p.LastUpdateDate " +
-            "FROM products p " +
-            "LEFT JOIN imgproducts i ON p.ProductID = i.ProductID " +
-            "LEFT JOIN categories c ON p.CategoriesID = c.CategoriesID " +
-            "WHERE p.NameProduct LIKE :keyword " +
-            "ORDER BY p.CreateDate DESC";
 
-    return jdbi.withHandle(handle ->
-            handle.createQuery(sql)
-                    .bind("keyword", "%" + keyword + "%")
-                    .mapToBean(Product.class)
-                    .list()
-    );
-}
+    //tìm kiếm sp
+    public List<Product> searchProductsByName(String keyword) {
+        String sql = "SELECT p.ProductID, c.Name AS Categories, p.NameProduct, p.Description, " +
+                "i.imgURL AS Image, p.Price, p.Stock, p.CreateDate, p.LastUpdateDate " +
+                "FROM products p " +
+                "LEFT JOIN imgproducts i ON p.ProductID = i.ProductID " +
+                "LEFT JOIN categories c ON p.CategoriesID = c.CategoriesID " +
+                "WHERE p.NameProduct LIKE :keyword " +
+                "ORDER BY p.CreateDate DESC";
+
+        return jdbi.withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("keyword", "%" + keyword + "%")
+                        .mapToBean(Product.class)
+                        .list()
+        );
+    }
+
+    public static void main(String[] args) {
+        ProductDAO dao = new ProductDAO();
+        List<Product> p = dao.getFavouriteProducts(4);
+        System.out.println(p.get(0).getNameProduct() + " " + p.get(0).getImage());
+    }
 }
 
